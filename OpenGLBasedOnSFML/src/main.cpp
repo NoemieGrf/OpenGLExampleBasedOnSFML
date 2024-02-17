@@ -2,13 +2,13 @@
 #include <string>
 
 #include <glew/glew.h>
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
+#include <sfml/Window.hpp>
+#include <sfml/OpenGL.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <SFML/Graphics/Image.hpp>
+#include <sfml/Graphics/Image.hpp>
 
 #include "Shader.hpp"
 #include "Camera.hpp"
