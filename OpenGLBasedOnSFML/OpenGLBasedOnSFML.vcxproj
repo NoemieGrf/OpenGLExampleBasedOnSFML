@@ -56,13 +56,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/thirdparty/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)/lib/glew/;$(ProjectDir)/lib/sfml/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-audio-s-d.lib;sfml-graphics-s-d.lib;sfml-network-s-d.lib;sfml-system-s-d.lib;sfml-window-s-d.lib;openal32.lib;opengl32.lib;ogg.lib;freetype.lib;winmm.lib;gdi32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)/thirdparty/lib/sfml/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -73,27 +73,30 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/thirdparty/include/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)/lib/glew/;$(ProjectDir)/lib/sfml/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-audio-s.lib;sfml-graphics-s.lib;sfml-network-s.lib;sfml-system-s.lib;sfml-window-s.lib;openal32.lib;opengl32.lib;ogg.lib;freetype.lib;winmm.lib;gdi32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)/thirdparty/lib/sfml/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-audio-s.lib;sfml-graphics-s.lib;sfml-network-s.lib;sfml-system-s.lib;sfml-window-s.lib;openal32.lib;opengl32.lib;ogg.lib;freetype.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\glad\glad.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.hpp" />
+    <ClInclude Include="src\glad\glad.h" />
+    <ClInclude Include="src\glad\khrplatform.h" />
     <ClInclude Include="src\Shader.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GLSL\fragmentSource.frag" />
-    <None Include="GLSL\vertexSource.vert" />
+    <None Include="glsl\fragmentSource.frag" />
+    <None Include="glsl\vertexSource.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

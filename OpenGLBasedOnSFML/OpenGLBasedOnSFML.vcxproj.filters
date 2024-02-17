@@ -4,13 +4,19 @@
     <Filter Include="src">
       <UniqueIdentifier>{cc298703-2134-4c2d-a809-3ef07346d536}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GLSL">
+    <Filter Include="glad">
+      <UniqueIdentifier>{a0fbbdec-28b4-4e99-a775-71e38e4ee465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glsl">
       <UniqueIdentifier>{19a510de-64e4-4cb5-b7c0-458102dc1d9b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad\glad.cpp">
+      <Filter>glad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -20,13 +26,19 @@
     <ClInclude Include="src\Camera.hpp">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\glad\glad.h">
+      <Filter>glad</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glad\khrplatform.h">
+      <Filter>glad</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GLSL\fragmentSource.frag">
-      <Filter>GLSL</Filter>
+    <None Include="glsl\fragmentSource.frag">
+      <Filter>glsl</Filter>
     </None>
-    <None Include="GLSL\vertexSource.vert">
-      <Filter>GLSL</Filter>
+    <None Include="glsl\vertexSource.vert">
+      <Filter>glsl</Filter>
     </None>
   </ItemGroup>
 </Project>

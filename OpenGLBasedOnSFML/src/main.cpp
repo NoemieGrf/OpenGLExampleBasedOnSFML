@@ -1,9 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include <glew/glew.h>
 #include <sfml/Window.hpp>
-#include <sfml/OpenGL.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,6 +10,7 @@
 
 #include "Shader.hpp"
 #include "Camera.hpp"
+#include "glad/glad.h"
 
 using std::cout;
 using std::endl;
@@ -63,9 +62,8 @@ int main()
 	window.setMouseCursorVisible(false);
 	window.setMouseCursorGrabbed(true);
 
-	// 初始化GLEW 必须再窗口之后
-	glewExperimental = GL_TRUE;
-	glewInit();
+	::gladLoadGL();
+
 	glEnable(GL_DEPTH_TEST);
 	
 #pragma endregion 
@@ -145,7 +143,7 @@ int main()
 	glViewport(0, 0, 800, 600); // lower left
 
 	// shader
-	Shader* testShader = new Shader("GLSL/vertexSource.vert", "GLSL/fragmentSource.frag");
+	Shader* testShader = new Shader("glsl/vertexSource.vert", "glsl/fragmentSource.frag");
 	
 	
 #pragma region VAO&VBO

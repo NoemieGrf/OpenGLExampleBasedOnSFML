@@ -1,12 +1,14 @@
 #pragma once
+
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <glew/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "glad/glad.h"
 
 class Shader
 {
