@@ -92,9 +92,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Data.h" />
     <ClInclude Include="src\glad\glad.h" />
     <ClInclude Include="src\glad\khrplatform.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Util.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glsl\fragmentSource.frag" />

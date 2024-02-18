@@ -38,6 +38,12 @@
     <ClInclude Include="src\glad\khrplatform.h">
       <Filter>glad</Filter>
     </ClInclude>
+    <ClInclude Include="src\Data.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="glsl\fragmentSource.frag">
