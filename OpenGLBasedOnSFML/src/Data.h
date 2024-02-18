@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-inline float vertices[] =
+inline float gVertices[] =
 {
 	-0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
@@ -53,7 +53,7 @@ inline float vertices[] =
 	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f, 0.0f, 1.0f
 };
 
-inline glm::vec3 cubePositions[] =
+inline glm::vec3 gCubePositions[] =
 {
 	glm::vec3(0.0f,  0.0f,  0.0f),
 	glm::vec3(2.0f,  5.0f, -15.0f),
