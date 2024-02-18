@@ -8,14 +8,11 @@
 
 #include <sfml/Graphics/Image.hpp>
 
-#include "Shader.hpp"
-#include "Camera.hpp"
+#include "Shader.h"
+#include "Camera.h"
 #include "glad/glad.h"
 
-using std::cout;
-using std::endl;
-
-unsigned int loadImage(std::string s, int internalFormat, GLenum format, int textureSlot)
+unsigned int loadImage(const std::string& s, int internalFormat, GLenum format, int textureSlot)
 {
 	unsigned int texBuffer;
 	glGenTextures(1, &texBuffer);
@@ -44,7 +41,7 @@ unsigned int loadImage(std::string s, int internalFormat, GLenum format, int tex
 
 int main()
 {
-#pragma region Init
+
 	// ³õÊ¼»¯Window´°¿Ú
 	sf::ContextSettings settings;
 	settings.depthBits = 24;
@@ -55,8 +52,7 @@ int main()
 	const float W_H_ratio = static_cast<float>(WIDTH) / HEIGHT;
 	const float FOV = 45.0f;
 	const sf::String TITLE = "Modern OpenGL";
-	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), TITLE,
-		sf::Style::Titlebar | sf::Style::Close, settings);
+	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), TITLE, sf::Style::Titlebar | sf::Style::Close, settings);
 
 	window.setActive();
 	window.setMouseCursorVisible(false);
@@ -64,11 +60,7 @@ int main()
 
 	::gladLoadGL();
 
-	glEnable(GL_DEPTH_TEST);
-	
-#pragma endregion 
-
-#pragma region Model Data
+	::glEnable(GL_DEPTH_TEST);
 
 	float vertices[] = 
 	{
@@ -134,8 +126,6 @@ int main()
 		glm::vec3(1.5f,  0.2f, -1.5f),
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-
-#pragma endregion
 
 	// camera
 	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::radians(0.0f), glm::radians(180.0f), glm::vec3(0, 1.0f, 0));
@@ -212,10 +202,10 @@ int main()
 					mouse_y = event.mouseMove.y;
 					mouse_first = false;
 				}
-				auto[x, y] = event.mouseMove;
+				auto [x, y] = event.mouseMove;
 				float x_offset = mouse_x - x;
 				float y_offset = y - mouse_y;
-				cout << x << " " << y << " " << x_offset << " " << y_offset << endl;
+				std::cout << x << " " << y << " " << x_offset << " " << y_offset << std::endl;
 				camera.ProcessMouseMovement(x_offset, y_offset);
 				view = camera.getViewMatrix();
 				mouse_x = x;
