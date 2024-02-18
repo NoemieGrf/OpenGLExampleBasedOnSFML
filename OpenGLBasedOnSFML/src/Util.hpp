@@ -8,7 +8,7 @@
 class Util
 {
 public:
-	inline static unsigned int loadImage(const std::string& s, int internalFormat, GLenum format, int textureSlot)
+	inline static unsigned int LoadImage(const std::string& s, int internalFormat, GLenum format, int textureSlot)
 	{
 		unsigned int texBuffer;
 		::glGenTextures(1, &texBuffer);

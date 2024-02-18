@@ -15,8 +15,7 @@
 
 int main()
 {
-
-	// 初始化Window窗口
+	/* Init SFML window */
 	sf::ContextSettings settings;
 	settings.depthBits = 24;
 	settings.stencilBits = 8;
@@ -25,27 +24,26 @@ int main()
 	const unsigned int HEIGHT = 600;
 	const float W_H_ratio = static_cast<float>(WIDTH) / HEIGHT;
 	const float FOV = 45.0f;
-	const sf::String TITLE = "Modern OpenGL";
-	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), TITLE, sf::Style::Titlebar | sf::Style::Close, settings);
+
+	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), "Modern OpenGL", sf::Style::Titlebar | sf::Style::Close, settings);
 
 	window.setActive();
 	window.setMouseCursorVisible(false);
 	window.setMouseCursorGrabbed(true);
 
+	/* GLAD load all openGL functions */
 	::gladLoadGL();
 
+	/* OpenGL enable depth test */
 	::glEnable(GL_DEPTH_TEST);
+	glViewport(0, 0, WIDTH, HEIGHT);
 
-	// camera
+	/* Camera */
 	Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::radians(0.0f), glm::radians(180.0f), glm::vec3(0, 1.0f, 0));
 
-	glViewport(0, 0, 800, 600); // lower left
-
-	// shader
+	/* Shader */
 	Shader* testShader = new Shader("glsl/vertexSource.vert", "glsl/fragmentSource.frag");
 	
-	
-#pragma region VAO&VBO
 	/* 产生VAO，绑定 */
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);		// 第一个参数是生成多少个VAO，第二个参数是生成的ID返还到哪里
@@ -74,22 +72,16 @@ int main()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
-#pragma endregion
 
 	// texture
-	unsigned int texture_buffer_0 = Util::loadImage("./resource/container.jpg", GL_RGB, GL_RGB, 0);
-	unsigned int texture_buffer_1 = Util::loadImage("./resource/face.png", GL_RGBA, GL_RGBA, 3);
-	
-#pragma region MVP matrices
+	unsigned int texture_buffer_0 = Util::LoadImage("./resource/container.jpg", GL_RGB, GL_RGB, 0);
+	unsigned int texture_buffer_1 = Util::LoadImage("./resource/face.png", GL_RGBA, GL_RGBA, 3);
 	
 	glm::mat4 model(1.0f);
 	glm::mat4 view = camera.getViewMatrix();
 	glm::mat4 projection(1.0f);
 	projection = glm::perspective(glm::radians(FOV), W_H_ratio, 0.1f, 100.0f);
-	
-#pragma endregion 
-	
-	
+
 	// 这个While循环是SFML的固定模式用于做事件处理
 	sf::Clock clock;
 	float mouse_x = 0;
