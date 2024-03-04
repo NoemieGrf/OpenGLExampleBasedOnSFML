@@ -7,7 +7,7 @@
 #include <sfml/Window.hpp>
 #include <sfml/Graphics/Image.hpp>
 
-#include "glad/glad.h"
+#include "glad/glad.hpp"
 
 #include "Shader.h"
 #include "Camera.h"

@@ -26,19 +26,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Shader.h">
+    <ClInclude Include="src\Shader.hpp">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Camera.h">
+    <ClInclude Include="src\Camera.hpp">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\glad\glad.h">
+    <ClInclude Include="src\glad\glad.hpp">
       <Filter>glad</Filter>
     </ClInclude>
     <ClInclude Include="src\glad\khrplatform.h">
       <Filter>glad</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data.h">
+    <ClInclude Include="src\Data.hpp">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Util.hpp">

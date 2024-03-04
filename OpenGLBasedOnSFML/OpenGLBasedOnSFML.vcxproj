@@ -91,11 +91,11 @@
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Camera.h" />
-    <ClInclude Include="src\Data.h" />
-    <ClInclude Include="src\glad\glad.h" />
+    <ClInclude Include="src\Camera.hpp" />
+    <ClInclude Include="src\Data.hpp" />
+    <ClInclude Include="src\glad\glad.hpp" />
     <ClInclude Include="src\glad\khrplatform.h" />
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\Shader.hpp" />
     <ClInclude Include="src\Util.hpp" />
   </ItemGroup>
   <ItemGroup>
