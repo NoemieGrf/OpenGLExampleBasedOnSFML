@@ -8,7 +8,7 @@
 class Util
 {
 public:
-	inline static unsigned int LoadImage(const std::string& s, int internalFormat, GLenum format, int textureSlot)
+	inline static unsigned int LoadImage(const std::string& path, int internalFormat, GLenum format, int textureSlot)
 	{
 		unsigned int texBuffer;
 		::glGenTextures(1, &texBuffer);
@@ -16,13 +16,13 @@ public:
 		::glActiveTexture(GL_TEXTURE0 + textureSlot);
 		::glBindTexture(GL_TEXTURE_2D, texBuffer);
 
-		sf::Image image1;
-		image1.loadFromFile(s);
-		image1.flipVertically();
+		sf::Image image;
+		image.loadFromFile(path);
+		image.flipVertically();
 
-		int width = image1.getSize().x;
-		int height = image1.getSize().y;
-		const unsigned char* data = image1.getPixelsPtr();
+		int width = image.getSize().x;
+		int height = image.getSize().y;
+		const unsigned char* data = image.getPixelsPtr();
 
 		if (data)
 		{
@@ -31,7 +31,7 @@ public:
 		}
 		else
 		{
-			std::cout << "Failed to load texture" << std::endl;
+			std::cout << "Failed to load texture:" << path << std::endl;
 		}
 
 		return texBuffer;

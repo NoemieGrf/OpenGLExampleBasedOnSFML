@@ -43,12 +43,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\Artifacts\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)\artifacts\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\Artifacts\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\Intermediate\$(Configuration)\</IntDir>
+    <OutDir>$(ProjectDir)\artifacts\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)\intermediate\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{09995fa4-5f5c-4fa3-867b-a46cc60c4b40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glsl">
+      <UniqueIdentifier>{b7c6fc6f-5ef9-45ba-bfda-9051bbdf1a1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\glad">
+      <UniqueIdentifier>{2a26ae63-8421-4a74-8e49-edc455a1839d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glad\glad.cpp">
+      <Filter>src\glad</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\glad\glad.hpp">
+      <Filter>src\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glad\khrplatform.h">
+      <Filter>src\glad</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Data.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shader.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="glsl\deferredPass.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\deferredPass.vert">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\geometryPass.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\geometryPass.vert">
+      <Filter>glsl</Filter>
+    </None>
+  </ItemGroup>
+</Project>

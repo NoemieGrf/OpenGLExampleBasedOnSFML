@@ -5,6 +5,10 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01BaseOpenGLRender", "01BaseOpenGLRender\01BaseOpenGLRender.vcxproj", "{430CA324-54AA-4821-ADE6-808FB27F19CF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02ForwardRendering", "02ForwardRendering\02ForwardRendering.vcxproj", "{FEB6540A-ADC6-4431-A30A-2FFE67FA57C4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03DeferredRendering", "03DeferredRendering\03DeferredRendering.vcxproj", "{88850EF2-AF44-4B5C-A19D-D21F332F8D82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +19,14 @@ Global
 		{430CA324-54AA-4821-ADE6-808FB27F19CF}.Debug|x64.Build.0 = Debug|x64
 		{430CA324-54AA-4821-ADE6-808FB27F19CF}.Release|x64.ActiveCfg = Release|x64
 		{430CA324-54AA-4821-ADE6-808FB27F19CF}.Release|x64.Build.0 = Release|x64
+		{FEB6540A-ADC6-4431-A30A-2FFE67FA57C4}.Debug|x64.ActiveCfg = Debug|x64
+		{FEB6540A-ADC6-4431-A30A-2FFE67FA57C4}.Debug|x64.Build.0 = Debug|x64
+		{FEB6540A-ADC6-4431-A30A-2FFE67FA57C4}.Release|x64.ActiveCfg = Release|x64
+		{FEB6540A-ADC6-4431-A30A-2FFE67FA57C4}.Release|x64.Build.0 = Release|x64
+		{88850EF2-AF44-4B5C-A19D-D21F332F8D82}.Debug|x64.ActiveCfg = Debug|x64
+		{88850EF2-AF44-4B5C-A19D-D21F332F8D82}.Debug|x64.Build.0 = Debug|x64
+		{88850EF2-AF44-4B5C-A19D-D21F332F8D82}.Release|x64.ActiveCfg = Release|x64
+		{88850EF2-AF44-4B5C-A19D-D21F332F8D82}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

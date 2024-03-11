@@ -28,15 +28,13 @@ int main()
 
 	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), "BaseOpenGLRender", sf::Style::Titlebar | sf::Style::Close, settings);
 
-	window.setActive();
-
 	/* Glad load all openGL functions */
 	::gladLoadGL();
 
 	/* OpenGL setting */
 	::glEnable(GL_DEPTH_TEST);
 	::glViewport(0, 0, WIDTH, HEIGHT);
-	::glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
 	/* Camera & Shader */
 	std::unique_ptr<Camera> pCamera = std::make_unique<Camera>(
@@ -67,19 +65,15 @@ int main()
 	::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 
 	/* Load texture */
-	unsigned int textureBuffer0 = Util::LoadImage("./resource/container.jpg", GL_RGB, GL_RGB, 0);
-	unsigned int textureBuffer1 = Util::LoadImage("./resource/face.png", GL_RGBA, GL_RGBA, 3);
+	unsigned int textureBuffer0 = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
+	unsigned int textureBuffer1 = Util::LoadImage("./resource/icon.png", GL_RGBA, GL_RGBA, 3);
 	
 	/* Prepare MVP */
 	glm::mat4 model(1.0f);
-	glm::mat4 view = pCamera->getViewMatrix();
+	glm::mat4 view = pCamera->GetViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(FOV), W_H_ratio, 0.1f, 100.0f);
 
 	sf::Clock clock;
-	float mouse_x = 0;
-	float mouse_y = 0;
-	bool mouse_first = true;
-
 	while (window.isOpen())
 	{
 		/* Window poll event */
@@ -95,6 +89,14 @@ int main()
 
 		sf::Time elapsed = clock.getElapsedTime();
 		float greenValue = (sin(elapsed.asSeconds()) / 2.0f) + 0.5f;
+
+		/* Set Material */
+		pShader->Bind();
+		pShader->SetUniformInt("ourTexture", 0);
+		pShader->SetUniformInt("ourFace", 3);
+		pShader->SetUniformFloat("fragIn", greenValue);
+		pShader->SetUniformMat4("view", view);
+		pShader->SetUniformMat4("projection", projection);
 		
 		/* Draw shapes */
 		for (unsigned int i = 0; i < 10; i++)
@@ -103,15 +105,7 @@ int main()
 			model = glm::translate(glm::mat4(1.0f), gCubePositions[i]);
 			float angle = 20.0f * i;
 			model = glm::rotate(model, glm::radians(angle) * elapsed.asSeconds(), glm::vec3(1.0f, 0.3f, 0.5f));
-			
-			/* Set Material */
-			pShader->use();
-			pShader->setInt("ourTexture", 0);
-			pShader->setInt("ourFace", 3);
-			pShader->setFloat("fragIn", greenValue);
-			pShader->setMat4fv("model", model);
-			pShader->setMat4fv("view", view);
-			pShader->setMat4fv("projection", projection);
+			pShader->SetUniformMat4("model", model);
 
 			/* Draw Call */
 			::glDrawArrays(GL_TRIANGLES, 0, 36);
