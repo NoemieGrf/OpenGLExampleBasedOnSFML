@@ -9,9 +9,9 @@
 
 #include "glad/glad.hpp"
 
-#include "Shader.h"
-#include "Camera.h"
-#include "Data.h"
+#include "Shader.hpp"
+#include "Camera.hpp"
+#include "Data.hpp"
 #include "Util.hpp"
 
 int main()
