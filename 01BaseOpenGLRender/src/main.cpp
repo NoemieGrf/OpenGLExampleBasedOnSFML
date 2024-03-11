@@ -21,16 +21,14 @@ int main()
 	settings.depthBits = 24;
 	settings.stencilBits = 8;
 
-	const unsigned int WIDTH = 800;
-	const unsigned int HEIGHT = 600;
+	const unsigned int WIDTH = 1600;
+	const unsigned int HEIGHT = 900;
 	const float W_H_ratio = static_cast<float>(WIDTH) / HEIGHT;
 	const float FOV = 45.0f;
 
-	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), "Modern OpenGL", sf::Style::Titlebar | sf::Style::Close, settings);
+	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), "BaseOpenGLRender", sf::Style::Titlebar | sf::Style::Close, settings);
 
 	window.setActive();
-	window.setMouseCursorVisible(false);
-	window.setMouseCursorGrabbed(true);
 
 	/* Glad load all openGL functions */
 	::gladLoadGL();
@@ -90,28 +88,6 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-
-			if (event.type == sf::Event::MouseMoved)
-			{
-				if (mouse_first)
-				{
-					mouse_x = event.mouseMove.x;
-					mouse_y = event.mouseMove.y;
-					mouse_first = false;
-				}
-
-				auto [x, y] = event.mouseMove;
-				float x_offset = mouse_x - x;
-				float y_offset = y - mouse_y;
-
-				std::cout << x << " " << y << " " << x_offset << " " << y_offset << std::endl;
-
-				pCamera->ProcessMouseMovement(x_offset, y_offset);
-				view = pCamera->getViewMatrix();
-
-				mouse_x = x;
-				mouse_y = y;
-			}
 		}
 
 		/* Clear the screen */
