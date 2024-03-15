@@ -53,10 +53,12 @@ int main()
     ::glBufferData(GL_ARRAY_BUFFER, sizeof(gVertices), gVertices, GL_STATIC_DRAW);
 
     /* Position & normal attribute */
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    ::glEnableVertexAttribArray(0);
+    ::glEnableVertexAttribArray(1);
+    ::glEnableVertexAttribArray(2);
+    ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+    ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    ::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 
     /* Prepare MVP */
     glm::mat4 model(1.0f);
@@ -81,7 +83,7 @@ int main()
         sf::Time elapsed = clock.getElapsedTime();
 
         boxShader.Bind();
-        boxShader.SetUniformVec3("light.position", gLightPos);
+        boxShader.SetUniformVec3("light.position", gLightPos[0]);
         boxShader.SetUniformVec3("viewPos", camera.GetPosition());
 
         /* Light properties */
