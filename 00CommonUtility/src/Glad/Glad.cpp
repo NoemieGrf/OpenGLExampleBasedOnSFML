@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "glad.hpp"
+#include "Glad.h"
 
 static void* get_proc(const char *namez);
 

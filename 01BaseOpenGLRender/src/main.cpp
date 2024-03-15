@@ -7,12 +7,11 @@
 #include <sfml/Window.hpp>
 #include <sfml/Graphics/Image.hpp>
 
-#include "glad/glad.hpp"
-
-#include "Shader.hpp"
-#include "Camera.hpp"
-#include "Data.hpp"
-#include "Util.hpp"
+#include "Glad/Glad.h"
+#include "Shader/Shader.h"
+#include "Camera/Camera.h"
+#include "GlobalData/Data.hpp"
+#include "Utility/Util.hpp"
 
 int main()
 {

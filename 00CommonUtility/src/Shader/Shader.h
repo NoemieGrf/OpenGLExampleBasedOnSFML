@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "glad/glad.hpp"
+#include "../Glad/Glad.h"
 
 class Shader
 {
@@ -22,6 +22,8 @@ public:
 	void SetUniformInt(const std::string& name, int value) const;
 	void SetUniformFloat(const std::string& name, float value) const;
 	void SetUniformMat4(const std::string& name, glm::mat4 mat) const;
+	void SetUniformVec3(const std::string& name, glm::vec3 vec) const;
+	void SetUniformVec3(const std::string& name, float x, float y, float z) const;
 
 private:
 	unsigned int _programHandle;

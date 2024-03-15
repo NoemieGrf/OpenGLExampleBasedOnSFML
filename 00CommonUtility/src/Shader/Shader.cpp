@@ -1,4 +1,4 @@
-#include "Shader.hpp"
+#include "Shader.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -73,6 +73,16 @@ void Shader::SetUniformFloat(const std::string& name, float value) const
 void Shader::SetUniformMat4(const std::string& name, glm::mat4 mat) const 
 { 
 	glUniformMatrix4fv(glGetUniformLocation(_programHandle, name.c_str()), 1, GL_FALSE, value_ptr(mat));
+}
+
+void Shader::SetUniformVec3(const std::string& name, glm::vec3 vec) const
+{
+	glUniform3fv(glGetUniformLocation(_programHandle, name.c_str()), 1, &vec[0]);
+}
+
+void Shader::SetUniformVec3(const std::string& name, float x, float y, float z) const
+{
+	glUniform3f(glGetUniformLocation(_programHandle, name.c_str()), x, y, z);
 }
 
 void Shader::CheckCompileErrors(unsigned int id, const std::string& type)

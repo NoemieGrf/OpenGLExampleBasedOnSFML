@@ -1,38 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glad\glad.cpp">
-      <Filter>src\glad</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Camera.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Data.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Shader.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Util.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glad\glad.hpp">
-      <Filter>src\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="src\glad\khrplatform.h">
-      <Filter>src\glad</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="glsl\vertexSource.vert">
@@ -48,9 +19,6 @@
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{019bbf11-20f5-4fc1-9ceb-9322eb5e5202}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\glad">
-      <UniqueIdentifier>{9d87250b-9f0d-4a7a-af5b-800ccdcf7154}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-#include "Camera.hpp"
+#include "Camera.h"
 
 Camera::Camera(glm::vec3 position_, float pitch_, float yaw_, glm::vec3 world_up_)
 	: _position(position_)
@@ -17,4 +17,9 @@ Camera::Camera(glm::vec3 position_, float pitch_, float yaw_, glm::vec3 world_up
 glm::mat4 Camera::GetViewMatrix()
 {
 	return glm::lookAt(_position, _position + _forward, _worldUp);
+}
+
+const glm::vec3& Camera::GetPosition()
+{
+	return _position;
 }

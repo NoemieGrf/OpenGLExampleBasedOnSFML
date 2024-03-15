@@ -10,6 +10,7 @@ public:
 
 public:
 	glm::mat4 GetViewMatrix();
+	const glm::vec3& GetPosition();
 
 public:
 	glm::vec3 _position;

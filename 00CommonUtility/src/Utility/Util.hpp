@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <sfml/Graphics/Image.hpp>
-#include "glad/glad.hpp"
+#include "../Glad/Glad.h"
 
 class Util
 {
