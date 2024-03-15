@@ -1,15 +1,17 @@
 
+#include <iostream>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "glad/glad.hpp"
 #include <sfml/Window.hpp>
 #include <sfml/Graphics/Image.hpp>
-#include <iostream>
-#include "Shader.hpp"
-#include "Camera.hpp"
-#include "Data.hpp"
 
+#include "Glad/Glad.h"
+#include "Shader/Shader.h"
+#include "Camera/Camera.h"
+#include "GlobalData/Data.hpp"
+#include "Utility/Util.hpp"
 void renderQuad();
 
 int main()
