@@ -105,16 +105,13 @@ int main()
 
 #pragma endregion
 
-    /* Load texture */
-    uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
-    uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
-
     /* Camera */
     Camera camera(glm::vec3(-5.0f, 4.0f, -5.0f), glm::radians(-30.0f), glm::radians(45.0f), glm::vec3(0, 1.0f, 0));
 
     /* Shader */
     Shader shaderGeometryPass("glsl/geometryPass.vert", "glsl/geometryPass.frag");
     Shader deferredLightingPass("glsl/deferredPass.vert", "glsl/deferredPass.frag");
+    Shader lightShader("glsl/light.vert", "glsl/light.frag");
 
 #pragma region [GBuffer]
 
@@ -169,6 +166,10 @@ int main()
 
 #pragma endregion
 
+    /* Load texture */
+    uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
+    uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
+
     /* render loop */
     while (window.isOpen())
     {
@@ -192,30 +193,8 @@ int main()
         ::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#pragma region [Draw Plane]
-
-        // 1. Bind vertex attribute
-        ::glBindVertexArray(planeVertexArray);
-
-        // 2. Bind vertex array
-        ::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
-
-        // 3. Bind shader program
-        shaderGeometryPass.Bind();
-
-        // 4. Upload shader parameters
-        shaderGeometryPass.SetUniformMat4("projection", projection);
-        shaderGeometryPass.SetUniformMat4("view", view);
-        shaderGeometryPass.SetUniformMat4("model", glm::mat4(1.0f));
-        shaderGeometryPass.SetUniformInt("tex", 1);
-
-        // 5. Draw call
-        ::glDrawArrays(GL_TRIANGLES, 0, 6);
-
-#pragma endregion
-
 #pragma region [Draw Cube]
-        /*
+        
         // 1. Bind vertex attribute
         ::glBindVertexArray(cubeVertexArray);
 
@@ -240,7 +219,29 @@ int main()
             // 5. Draw call
             ::glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        */
+        
+#pragma endregion
+
+#pragma region [Draw Plane]
+
+        // 1. Bind vertex attribute
+        ::glBindVertexArray(planeVertexArray);
+
+        // 2. Bind vertex array
+        ::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
+
+        // 3. Bind shader program
+        shaderGeometryPass.Bind();
+
+        // 4. Upload shader parameters
+        shaderGeometryPass.SetUniformMat4("projection", projection);
+        shaderGeometryPass.SetUniformMat4("view", view);
+        shaderGeometryPass.SetUniformMat4("model", glm::mat4(1.0f));
+        shaderGeometryPass.SetUniformInt("tex", 1);
+
+        // 5. Draw call
+        ::glDrawArrays(GL_TRIANGLES, 0, 6);
+
 #pragma endregion
 
         ::glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -251,6 +252,15 @@ int main()
 
         ::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        ::glActiveTexture(GL_TEXTURE0 + 2);
+        ::glBindTexture(GL_TEXTURE_2D, gPosition);
+
+        ::glActiveTexture(GL_TEXTURE0 + 3);
+        ::glBindTexture(GL_TEXTURE_2D, gNormal);
+
+        ::glActiveTexture(GL_TEXTURE0 + 4);
+        ::glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 
 #pragma region [Draw Quad]
 
@@ -264,16 +274,9 @@ int main()
         deferredLightingPass.Bind();
 
         // 4. Upload shader parameters
-        deferredLightingPass.SetUniformInt("gPosition", 0);
-        deferredLightingPass.SetUniformInt("gNormal", 1);
-        deferredLightingPass.SetUniformInt("gAlbedoSpec", 2);
-
-        ::glActiveTexture(GL_TEXTURE0);
-        ::glBindTexture(GL_TEXTURE_2D, gPosition);
-        ::glActiveTexture(GL_TEXTURE1);
-        ::glBindTexture(GL_TEXTURE_2D, gNormal);
-        ::glActiveTexture(GL_TEXTURE2);
-        ::glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+        deferredLightingPass.SetUniformInt("gPosition", 2);
+        deferredLightingPass.SetUniformInt("gNormal", 3);
+        deferredLightingPass.SetUniformInt("gAlbedoSpec", 4);
 
         for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
         {
@@ -291,9 +294,39 @@ int main()
 #pragma endregion
 
         ::glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
+
         ::glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
         ::glBlitFramebuffer(0, 0, WIDTH, HEIGHT, 0, 0, WIDTH, HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
         ::glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#pragma region [Draw Light]
+
+        // 1. Bind vertex attribute
+        ::glBindVertexArray(cubeVertexArray);
+
+        // 2. Bind vertex array
+        ::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
+
+        // 3. Bind shader program
+        lightShader.Bind();
+
+        // 4. Upload shader parameters
+        lightShader.SetUniformMat4("view", view);
+        lightShader.SetUniformMat4("projection", projection);
+
+        for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
+        {
+            model = glm::translate(glm::mat4(1.0f), gMultiLightPosition[i]);
+            model = glm::scale(model, glm::vec3(0.2f));
+            lightShader.SetUniformMat4("model", model);
+            lightShader.SetUniformVec3("lightColor", gMultiLightPosition[i]);
+
+            // 5. Draw call
+            ::glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
+#pragma endregion 
 
 #pragma endregion
 
