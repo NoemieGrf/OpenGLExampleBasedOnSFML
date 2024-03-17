@@ -281,10 +281,10 @@ int main()
         for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
         {
             deferredLightingPass.SetUniformVec3("lights[" + std::to_string(i) + "].Position", gMultiLightPosition[i]);
-            deferredLightingPass.SetUniformVec3("lights[" + std::to_string(i) + "].Color", gMultiLightPosition[i]);
+            deferredLightingPass.SetUniformVec3("lights[" + std::to_string(i) + "].Color", gMultiLightColor[i]);
 
-            const float linear = 0.1f;
-            const float quadratic = 1.0f;
+            const float linear = 0.5f;
+            const float quadratic = 0.3f;
             deferredLightingPass.SetUniformFloat("lights[" + std::to_string(i) + "].Linear", linear);
             deferredLightingPass.SetUniformFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
         }
@@ -320,7 +320,7 @@ int main()
             model = glm::translate(glm::mat4(1.0f), gMultiLightPosition[i]);
             model = glm::scale(model, glm::vec3(0.2f));
             lightShader.SetUniformMat4("model", model);
-            lightShader.SetUniformVec3("lightColor", gMultiLightPosition[i]);
+            lightShader.SetUniformVec3("lightColor", gMultiLightColor[i]);
 
             // 5. Draw call
             ::glDrawArrays(GL_TRIANGLES, 0, 36);
