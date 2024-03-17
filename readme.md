@@ -8,26 +8,26 @@
 
 ## Base unlit rendering
 
-![](./DocImages/BaseRendering.gif)
+![](./DocImages/BaseRendering.png)
 
 ## Forward light rendering
 
-![](./DocImages/ForwardRendering.gif)
+![](./DocImages/ForwardRendering.png)
 
 ## Deferred light rendering
 
-![](./DocImages/DeferredRendering.gif)
+![](./DocImages/DeferredRendering.png)
 
 ### GBuffer content
 
 - Position buffer
 
-![](./DocImages/GPos.gif)
+![](./DocImages/GPos.png)
 
 - Normal buffer
 
-![](./DocImages/GNormal.gif)
+![](./DocImages/GNormal.png)
 
 - Albedo & Specular
 
-![](./DocImages/GAlbedoSpecular.gif)
+![](./DocImages/GAlbedoSpecular.png)
