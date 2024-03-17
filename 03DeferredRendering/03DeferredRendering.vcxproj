@@ -95,6 +95,8 @@
     <None Include="glsl\deferredPass.vert" />
     <None Include="glsl\geometryPass.frag" />
     <None Include="glsl\geometryPass.vert" />
+    <None Include="glsl\light.frag" />
+    <None Include="glsl\light.vert" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\00CommonUtility\00CommonUtility.vcxproj">

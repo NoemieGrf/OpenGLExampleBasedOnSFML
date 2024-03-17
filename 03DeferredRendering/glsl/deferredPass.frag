@@ -20,6 +20,9 @@ uniform vec3 viewPos;
 
 void main()
 {
+    FragColor = vec4(texture(gAlbedoSpec, TexCoords).rgb, 1);
+    return;
+
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
     vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;

@@ -10,8 +10,12 @@
 #include "Glad/Glad.h"
 #include "Shader/Shader.h"
 #include "Camera/Camera.h"
-#include "GlobalData/Data.hpp"
+#include "GlobalData/Plane.h"
+#include "GlobalData/Cube.h"
+#include "GlobalData/Light.h"
 #include "Utility/Util.hpp"
+
+using uint = unsigned int;
 
 int main()
 {
@@ -35,24 +39,17 @@ int main()
     ::glViewport(0, 0, WIDTH, HEIGHT);
     ::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
-    /* Camera & Shader */
-    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::radians(0.0f), glm::radians(180.0f), glm::vec3(0, 1.0f, 0));
-    Shader boxShader("glsl/box.vert", "glsl/box.frag");
+    /* [VBO] Create vertex buffer for plane */
+    uint planeVertexBuffer;	// this is a handle
+    ::glGenBuffers(1, &planeVertexBuffer);
+    ::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
+    ::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gPlaneVertices.size(), gPlaneVertices.data(), GL_STATIC_DRAW);
 
-    /* Generate vertex array and bind it */
-    unsigned int boxVertexArrayObject;
-    ::glGenVertexArrays(1, &boxVertexArrayObject);
-    ::glBindVertexArray(boxVertexArrayObject);
-
-    /* Generate vertex buffer and bind it */
-    unsigned int boxVertexBufferObject;
-    ::glGenBuffers(1, &boxVertexBufferObject);
-    ::glBindBuffer(GL_ARRAY_BUFFER, boxVertexBufferObject);
-
-    /* Pass vertex buffer data form cpu to gpu */
-    ::glBufferData(GL_ARRAY_BUFFER, sizeof(gVertices), gVertices, GL_STATIC_DRAW);
-
-    /* Position & normal attribute */
+    /* [VAO] Generate vertex array for plane and bind it */
+    uint planeVertexArray;
+    ::glGenVertexArrays(1, &planeVertexArray);
+    ::glBindVertexArray(planeVertexArray);
+    /* Open vertex attrib */
     ::glEnableVertexAttribArray(0);
     ::glEnableVertexAttribArray(1);
     ::glEnableVertexAttribArray(2);
@@ -60,13 +57,34 @@ int main()
     ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
     ::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 
-    /* Prepare MVP */
-    glm::mat4 model(1.0f);
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = glm::perspective(glm::radians(FOV), W_H_ratio, 0.1f, 100.0f);
+    /* [VBO] Create vertex buffer for cube */
+    uint cubeVertexBuffer;
+    ::glGenBuffers(1, &cubeVertexBuffer);
+    ::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
+    ::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gCubeVertices.size(), gCubeVertices.data(), GL_STATIC_DRAW);
+
+    /* [VAO] Generate vertex array for plane and bind it */
+    uint cubeVertexArray;
+    ::glGenVertexArrays(1, &cubeVertexArray);
+    ::glBindVertexArray(cubeVertexArray);
+    /* Open vertex attrib */
+    ::glEnableVertexAttribArray(0);
+    ::glEnableVertexAttribArray(1);
+    ::glEnableVertexAttribArray(2);
+    ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+    ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    ::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+
+    /* Load texture */
+    uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
+    uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
+
+    /* Camera & Shader */
+    Camera camera(glm::vec3(-5.0f, 4.0f, -5.0f), glm::radians(-30.0f), glm::radians(45.0f), glm::vec3(0, 1.0f, 0));
+    Shader generalShader("glsl/general.vert", "glsl/general.frag");
+    Shader lightShader("glsl/light.vert", "glsl/light.frag");
 
     /* render loop */
-    sf::Clock clock;
     while (window.isOpen())
     {
         /* Window poll event */
@@ -80,47 +98,130 @@ int main()
         /* Clear the screen */
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        sf::Time elapsed = clock.getElapsedTime();
+        /* Prepare MVP */
+        glm::mat4 model(1.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 projection = glm::perspective(glm::radians(FOV), W_H_ratio, 0.1f, 100.0f);
 
-        boxShader.Bind();
-        boxShader.SetUniformVec3("light.position", gLightPos[0]);
-        boxShader.SetUniformVec3("viewPos", camera.GetPosition());
+#pragma region [Draw Light]
 
-        /* Light properties */
-        glm::vec3 lightColor = glm::vec3{ 0.6f, 0.6f, 1.0f };
-        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
-        boxShader.SetUniformVec3("light.ambient", ambientColor);
-        boxShader.SetUniformVec3("light.diffuse", diffuseColor);
-        boxShader.SetUniformVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        // 1. Bind vertex attribute
+        ::glBindVertexArray(cubeVertexArray);
 
-        /* Material properties */
-        boxShader.SetUniformVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-        boxShader.SetUniformVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-        boxShader.SetUniformVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material
-        boxShader.SetUniformFloat("material.shininess", 32.0f);
+        // 2. Bind vertex array
+        ::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
 
-        /* VP */
-        boxShader.SetUniformMat4("projection", projection);
-        boxShader.SetUniformMat4("view", view);
+        // 3. Bind shader program
+        lightShader.Bind();
 
-        for (unsigned int i = 0; i < 10; i++)
+        // 4. Upload shader parameters
+        lightShader.SetUniformMat4("view", view);
+        lightShader.SetUniformMat4("projection", projection);
+        model = glm::translate(glm::mat4(1.0f), gSingleLightPosition);
+        model = glm::scale(model, glm::vec3(0.2f));
+        lightShader.SetUniformMat4("model", model);
+
+        // 5. Draw call
+        ::glDrawArrays(GL_TRIANGLES, 0, 36);
+
+#pragma endregion 
+
+#pragma region [Draw Plane]
+
         {
-            /* Set Model Matrix */
-            model = glm::translate(glm::mat4(1.0f), gCubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle) * elapsed.asSeconds(), glm::vec3(1.0f, 0.3f, 0.5f));
-            boxShader.SetUniformMat4("model", model);
+            // 1. Bind vertex attribute
+            ::glBindVertexArray(planeVertexArray);
 
-            /* Draw Call */
-            ::glDrawArrays(GL_TRIANGLES, 0, 36);
+            // 2. Bind vertex array
+            ::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
+
+            // 3. Bind shader program
+            generalShader.Bind();
+
+            // 4. Upload shader parameters
+            generalShader.SetUniformInt("tex", 1);
+            generalShader.SetUniformVec3("light.position", gSingleLightPosition);
+            generalShader.SetUniformVec3("viewPos", camera.GetPosition());
+
+            /* Light properties */
+            glm::vec3 lightColor = glm::vec3{ 1.0f, 1.0f, 1.0f };
+            glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+            glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+            generalShader.SetUniformVec3("light.ambient", ambientColor);
+            generalShader.SetUniformVec3("light.diffuse", diffuseColor);
+            generalShader.SetUniformVec3("light.specular", 0.6f, 0.6f, 0.6f);
+
+            /* Material properties */
+            generalShader.SetUniformVec3("material.diffuse", 1.0f, 1.0f, 1.0f);
+            generalShader.SetUniformVec3("material.specular", 0.6f, 0.6f, 0.6f);
+            generalShader.SetUniformFloat("material.shininess", 16.0f);
+
+            /* MVP */
+            generalShader.SetUniformMat4("model", glm::mat4(1.0f));
+            generalShader.SetUniformMat4("view", view);
+            generalShader.SetUniformMat4("projection", projection);
+
+            // 5. Draw call
+            ::glDrawArrays(GL_TRIANGLES, 0, 6);
         }
+
+#pragma endregion
+
+#pragma region [Draw Cube]
+
+        {
+            // 1. Bind vertex attribute
+            ::glBindVertexArray(cubeVertexArray);
+
+            // 2. Bind vertex array
+            ::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
+
+            // 3. Bind shader program
+            generalShader.Bind();
+
+            // 4. Upload shader parameters
+            generalShader.SetUniformInt("tex", 0);
+            generalShader.SetUniformVec3("light.position", gSingleLightPosition);
+            generalShader.SetUniformVec3("viewPos", camera.GetPosition());
+
+            /* Light properties */
+            glm::vec3 lightColor = glm::vec3{ 1.0f, 1.0f, 1.0f };
+            glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+            glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+            generalShader.SetUniformVec3("light.ambient", ambientColor);
+            generalShader.SetUniformVec3("light.diffuse", diffuseColor);
+            generalShader.SetUniformVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+            /* Material properties */
+            generalShader.SetUniformVec3("material.diffuse", 1.0f, 1.0f, 1.0f);
+            generalShader.SetUniformVec3("material.specular", 1.0f, 1.0f, 1.0f); // specular lighting doesn't have full effect on this object's material
+            generalShader.SetUniformFloat("material.shininess", 32.0f);
+
+            /* VP */
+            generalShader.SetUniformMat4("projection", projection);
+            generalShader.SetUniformMat4("view", view);
+
+            for (auto i = 0; i < gCubePositions.size(); i++)
+            {
+                model = glm::translate(glm::mat4(1.0f), gCubePositions[i]);
+                generalShader.SetUniformMat4("model", model);
+
+                // 5. Draw call
+                ::glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+        }
+
+#pragma endregion    
 
         window.display();
     }
 
-    ::glDeleteVertexArrays(1, &boxVertexArrayObject);
-    ::glDeleteBuffers(1, &boxVertexBufferObject);
+    ::glDeleteBuffers(1, &cubeVertexBuffer);
+    ::glDeleteBuffers(1, &planeVertexBuffer);
+    ::glDeleteTextures(1, &boxTexture);
+    ::glDeleteTextures(1, &planeTexture);
+    ::glDeleteVertexArrays(1, &planeVertexArray);
+    ::glDeleteVertexArrays(1, &cubeVertexArray);
 
     return 0;
 }

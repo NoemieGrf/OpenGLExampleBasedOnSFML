@@ -14,10 +14,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="glsl\box.frag">
+    <None Include="glsl\general.frag">
       <Filter>glsl</Filter>
     </None>
-    <None Include="glsl\box.vert">
+    <None Include="glsl\general.vert">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\light.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\light.vert">
       <Filter>glsl</Filter>
     </None>
   </ItemGroup>

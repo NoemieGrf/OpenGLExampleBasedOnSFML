@@ -5,13 +5,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <sfml/Window.hpp>
-#include <sfml/Graphics/Image.hpp>
 
 #include "Glad/Glad.h"
 #include "Shader/Shader.h"
 #include "Camera/Camera.h"
-#include "GlobalData/Data.hpp"
+#include "GlobalData/Plane.h"
+#include "GlobalData/Cube.h"
 #include "Utility/Util.hpp"
+
+using uint = unsigned int;
 
 int main()
 {
@@ -20,10 +22,10 @@ int main()
 	settings.depthBits = 24;
 	settings.stencilBits = 8;
 
-	const unsigned int WIDTH = 1600;
-	const unsigned int HEIGHT = 900;
+	const uint WIDTH = 1600;
+	const uint HEIGHT = 900;
 	const float W_H_ratio = static_cast<float>(WIDTH) / HEIGHT;
-	const float FOV = 45.0f;
+	const float FOV = 50.0f;
 
 	sf::Window window(sf::VideoMode(WIDTH, HEIGHT, 32), "BaseOpenGLRender", sf::Style::Titlebar | sf::Style::Close, settings);
 
@@ -35,26 +37,34 @@ int main()
 	::glViewport(0, 0, WIDTH, HEIGHT);
 	::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
-	/* Camera & Shader */
-	std::unique_ptr<Camera> pCamera = std::make_unique<Camera>(
-		glm::vec3(0.0f, 0.0f, 3.0f), glm::radians(0.0f), glm::radians(180.0f), glm::vec3(0, 1.0f, 0));
+	/* [VBO] Create vertex buffer for plane */
+	uint planeVertexBuffer;	// this is a handle
+	::glGenBuffers(1, &planeVertexBuffer);
+	::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer); 
+	::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gPlaneVertices.size(), gPlaneVertices.data(), GL_STATIC_DRAW);
 
-	std::unique_ptr<Shader> pShader = std::make_unique<Shader>(
-		"glsl/vertexSource.vert", "glsl/fragmentSource.frag");
+	/* [VAO] Generate vertex array for plane and bind it */
+	uint planeVertexArray;
+	::glGenVertexArrays(1, &planeVertexArray);
+	::glBindVertexArray(planeVertexArray);
+	/* Open vertex attrib */
+	::glEnableVertexAttribArray(0);
+	::glEnableVertexAttribArray(1);
+	::glEnableVertexAttribArray(2);
+	::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+	::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+
+	/* [VBO] Create vertex buffer for cube */
+	uint cubeVertexBuffer;
+	::glGenBuffers(1, &cubeVertexBuffer);
+	::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
+	::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gCubeVertices.size(), gCubeVertices.data(), GL_STATIC_DRAW);
 	
-	/* Generate vertex array and bind it */
-	unsigned int vertexArrayObject;
-	::glGenVertexArrays(1, &vertexArrayObject);
-	::glBindVertexArray(vertexArrayObject);
-
-	/* Generate vertex buffer and bind it */
-	unsigned int vertexBufferObject;
-	::glGenBuffers(1, &vertexBufferObject);
-	::glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-
-	/* Pass vertex buffer data form cpu to gpu */
-	::glBufferData(GL_ARRAY_BUFFER, sizeof(gVertices), gVertices, GL_STATIC_DRAW);
-
+	/* [VAO] Generate vertex array for plane and bind it */
+	uint cubeVertexArray;
+	::glGenVertexArrays(1, &cubeVertexArray);
+	::glBindVertexArray(cubeVertexArray);
 	/* Open vertex attrib */
 	::glEnableVertexAttribArray(0);
 	::glEnableVertexAttribArray(1);
@@ -64,15 +74,15 @@ int main()
 	::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 
 	/* Load texture */
-	unsigned int textureBuffer0 = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
-	unsigned int textureBuffer1 = Util::LoadImage("./resource/icon.png", GL_RGBA, GL_RGBA, 3);
-	
-	/* Prepare MVP */
-	glm::mat4 model(1.0f);
-	glm::mat4 view = pCamera->GetViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(FOV), W_H_ratio, 0.1f, 100.0f);
+	uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
+	uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
 
-	sf::Clock clock;
+	/* Camera */
+	Camera camera(glm::vec3(-5.0f, 4.0f, -5.0f), glm::radians(-30.0f), glm::radians(45.0f), glm::vec3(0, 1.0f, 0));
+
+	/* Shader */
+	Shader shader("glsl/general.vert", "glsl/general.frag");
+	
 	while (window.isOpen())
 	{
 		/* Window poll event */
@@ -86,37 +96,72 @@ int main()
 		/* Clear the screen */
 		::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		sf::Time elapsed = clock.getElapsedTime();
-		float greenValue = (sin(elapsed.asSeconds()) / 2.0f) + 0.5f;
+		/* Prepare MVP */
+		glm::mat4 model(1.0f);	// model针对每个模型，画之前重新算
+		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(glm::radians(FOV), W_H_ratio, 0.1f, 100.0f);
 
-		/* Set Material */
-		pShader->Bind();
-		pShader->SetUniformInt("ourTexture", 0);
-		pShader->SetUniformInt("ourFace", 3);
-		pShader->SetUniformFloat("fragIn", greenValue);
-		pShader->SetUniformMat4("view", view);
-		pShader->SetUniformMat4("projection", projection);
+#pragma region [Draw Plane]
+
+		// 1. Bind vertex attribute
+		::glBindVertexArray(planeVertexArray);
+
+		// 2. Bind vertex array
+		::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
+
+		// 3. Bind shader program
+		shader.Bind();
+
+		// 4. Upload shader parameters
+		shader.SetUniformMat4("model", model);
+		shader.SetUniformMat4("view", view);
+		shader.SetUniformMat4("projection", projection);
+		shader.SetUniformInt("tex", 1);
+
+		// 5. Draw call
+		::glDrawArrays(GL_TRIANGLES, 0, 6);
+
+#pragma endregion
+
+#pragma region [Draw Cube]
 		
-		/* Draw shapes */
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			/* Set Model Matrix */
-			model = glm::translate(glm::mat4(1.0f), gCubePositions[i]);
-			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle) * elapsed.asSeconds(), glm::vec3(1.0f, 0.3f, 0.5f));
-			pShader->SetUniformMat4("model", model);
+		// 1. Bind vertex attribute
+		::glBindVertexArray(cubeVertexArray);
+		
+		// 2. Bind vertex array
+		::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
 
-			/* Draw Call */
+		// 3. Bind shader program
+		shader.Bind();
+
+		// 4. Upload shader parameters
+		shader.SetUniformMat4("view", view);
+		shader.SetUniformMat4("projection", projection);
+		shader.SetUniformInt("tex", 0);
+
+		for (auto i = 0; i < gCubePositions.size(); i++)
+		{
+			model = glm::translate(glm::mat4(1.0f), gCubePositions[i]);
+			shader.SetUniformMat4("model", model);
+
+			// 5. Draw call
 			::glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+		
+#pragma endregion
 
+		/* Swap back buffer */
 		window.display();
 	}
 
-	::glDeleteBuffers(1, &vertexBufferObject);
-	::glDeleteVertexArrays(1, &vertexArrayObject);
+	::glDeleteBuffers(1, &cubeVertexBuffer);
+	::glDeleteBuffers(1, &planeVertexBuffer);
+	::glDeleteTextures(1, &boxTexture);
+	::glDeleteTextures(1, &planeTexture);
+	::glDeleteVertexArrays(1, &planeVertexArray);
+	::glDeleteVertexArrays(1, &cubeVertexArray);
 
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 

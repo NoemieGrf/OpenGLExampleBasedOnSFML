@@ -6,10 +6,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="glsl\vertexSource.vert">
+    <None Include="glsl\general.frag">
       <Filter>glsl</Filter>
     </None>
-    <None Include="glsl\fragmentSource.frag">
+    <None Include="glsl\general.vert">
       <Filter>glsl</Filter>
     </None>
   </ItemGroup>

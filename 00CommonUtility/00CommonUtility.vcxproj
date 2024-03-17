@@ -19,7 +19,11 @@
     <ClInclude Include="src\Camera\Camera.h" />
     <ClInclude Include="src\Glad\Glad.h" />
     <ClInclude Include="src\Glad\Khrplatform.h" />
+    <ClInclude Include="src\GlobalData\Cube.h" />
     <ClInclude Include="src\GlobalData\Data.hpp" />
+    <ClInclude Include="src\GlobalData\Light.h" />
+    <ClInclude Include="src\GlobalData\Plane.h" />
+    <ClInclude Include="src\GlobalData\Quad.h" />
     <ClInclude Include="src\Shader\Shader.h" />
     <ClInclude Include="src\Utility\Util.hpp" />
   </ItemGroup>

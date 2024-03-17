@@ -1,51 +1,66 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Camera">
+    <Filter Include="src">
+      <UniqueIdentifier>{7678cd12-43e3-43de-85c3-c308719dbaf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Camera">
       <UniqueIdentifier>{703ce456-bee1-4748-ab44-42be6653d26a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Glad">
+    <Filter Include="src\Glad">
       <UniqueIdentifier>{69b7a832-532e-45ec-95f6-e924beb45573}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader">
+    <Filter Include="src\GlobalData">
+      <UniqueIdentifier>{213cb960-009b-4190-bfc6-82c3e37d15b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Shader">
       <UniqueIdentifier>{c8678212-2244-4330-bf2d-437fc0793f98}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utility">
+    <Filter Include="src\Utility">
       <UniqueIdentifier>{f05c5fbd-dbde-4388-86ff-637018b7ece1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GlobalData">
-      <UniqueIdentifier>{213cb960-009b-4190-bfc6-82c3e37d15b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera\Camera.cpp">
-      <Filter>Camera</Filter>
+      <Filter>src\Camera</Filter>
     </ClCompile>
     <ClCompile Include="src\Glad\Glad.cpp">
-      <Filter>Glad</Filter>
+      <Filter>src\Glad</Filter>
     </ClCompile>
     <ClCompile Include="src\Shader\Shader.cpp">
-      <Filter>Shader</Filter>
+      <Filter>src\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera\Camera.h">
-      <Filter>Camera</Filter>
+      <Filter>src\Camera</Filter>
     </ClInclude>
     <ClInclude Include="src\Glad\Glad.h">
-      <Filter>Glad</Filter>
+      <Filter>src\Glad</Filter>
     </ClInclude>
     <ClInclude Include="src\Glad\Khrplatform.h">
-      <Filter>Glad</Filter>
+      <Filter>src\Glad</Filter>
     </ClInclude>
     <ClInclude Include="src\GlobalData\Data.hpp">
-      <Filter>GlobalData</Filter>
+      <Filter>src\GlobalData</Filter>
     </ClInclude>
     <ClInclude Include="src\Utility\Util.hpp">
-      <Filter>Utility</Filter>
+      <Filter>src\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GlobalData\Cube.h">
+      <Filter>src\GlobalData</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GlobalData\Plane.h">
+      <Filter>src\GlobalData</Filter>
     </ClInclude>
     <ClInclude Include="src\Shader\Shader.h">
-      <Filter>Shader</Filter>
+      <Filter>src\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GlobalData\Light.h">
+      <Filter>src\GlobalData</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GlobalData\Quad.h">
+      <Filter>src\GlobalData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

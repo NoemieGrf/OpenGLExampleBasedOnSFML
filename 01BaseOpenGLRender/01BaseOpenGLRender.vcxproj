@@ -88,8 +88,8 @@
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="glsl\fragmentSource.frag" />
-    <None Include="glsl\vertexSource.vert" />
+    <None Include="glsl\general.frag" />
+    <None Include="glsl\general.vert" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\00CommonUtility\00CommonUtility.vcxproj">

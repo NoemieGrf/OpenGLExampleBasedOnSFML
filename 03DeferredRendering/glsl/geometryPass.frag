@@ -6,11 +6,14 @@ layout (location = 2) out vec4 gAlbedoSpec;
 
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoord;
+
+uniform sampler2D tex;
 
 void main()
 {
     gPosition = FragPos;
     gNormal = normalize(Normal);
-    gAlbedoSpec.rgb = vec3(0.8, 0.7, 1.0);
+    gAlbedoSpec.rgb = texture(tex, TexCoord).rgb;
     gAlbedoSpec.a = 0.8;
 }

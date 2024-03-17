@@ -26,5 +26,11 @@
     <None Include="glsl\geometryPass.vert">
       <Filter>glsl</Filter>
     </None>
+    <None Include="glsl\light.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\light.vert">
+      <Filter>glsl</Filter>
+    </None>
   </ItemGroup>
 </Project>

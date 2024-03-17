@@ -6,7 +6,7 @@
 class Camera
 {
 public:
-	Camera(glm::vec3 position_, float pitch_, float yaw_, glm::vec3 world_up_);
+	Camera(glm::vec3 position, float pitch, float yaw, const glm::vec3& worldUp);
 
 public:
 	glm::mat4 GetViewMatrix();
