@@ -333,4 +333,15 @@ int main()
         /* Swap buffer */
         window.display();
     }
+
+    ::glDeleteBuffers(1, &cubeVertexBuffer);
+    ::glDeleteBuffers(1, &planeVertexBuffer);
+    ::glDeleteBuffers(1, &quadVertexBuffer);
+    ::glDeleteTextures(1, &boxTexture);
+    ::glDeleteTextures(1, &planeTexture);
+    ::glDeleteVertexArrays(1, &planeVertexArray);
+    ::glDeleteVertexArrays(1, &cubeVertexArray);
+    ::glDeleteVertexArrays(1, &quadVertexArray);
+
+    return 1;
 }

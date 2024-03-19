@@ -41,9 +41,6 @@
     <ClInclude Include="src\Glad\Khrplatform.h">
       <Filter>src\Glad</Filter>
     </ClInclude>
-    <ClInclude Include="src\GlobalData\Data.hpp">
-      <Filter>src\GlobalData</Filter>
-    </ClInclude>
     <ClInclude Include="src\Utility\Util.hpp">
       <Filter>src\Utility</Filter>
     </ClInclude>
@@ -60,6 +57,9 @@
       <Filter>src\GlobalData</Filter>
     </ClInclude>
     <ClInclude Include="src\GlobalData\Quad.h">
+      <Filter>src\GlobalData</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GlobalData\TransparentWindow.h">
       <Filter>src\GlobalData</Filter>
     </ClInclude>
   </ItemGroup>

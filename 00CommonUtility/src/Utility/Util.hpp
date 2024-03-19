@@ -9,7 +9,7 @@ class Util
 {
 public:
 	Util() = delete;
-		
+
 public:
 	static unsigned int LoadImage(const std::string& path, int internalFormat, GLenum format, int textureSlot)
 	{
@@ -19,7 +19,7 @@ public:
 		::glActiveTexture(GL_TEXTURE0 + textureSlot); // 激活指定车位
 		::glBindTexture(GL_TEXTURE_2D, texBuffer);
 
-		::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   
+		::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

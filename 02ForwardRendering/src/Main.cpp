@@ -218,10 +218,12 @@ int main()
 
     ::glDeleteBuffers(1, &cubeVertexBuffer);
     ::glDeleteBuffers(1, &planeVertexBuffer);
-    ::glDeleteTextures(1, &boxTexture);
-    ::glDeleteTextures(1, &planeTexture);
+
     ::glDeleteVertexArrays(1, &planeVertexArray);
     ::glDeleteVertexArrays(1, &cubeVertexArray);
+
+    ::glDeleteTextures(1, &boxTexture);
+    ::glDeleteTextures(1, &planeTexture);
 
     return 0;
 }
