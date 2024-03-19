@@ -39,8 +39,6 @@ int main()
 
     /* OpenGL setting */
     ::glEnable(GL_DEPTH_TEST);
-    ::glEnable(GL_BLEND);
-    ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     ::glViewport(0, 0, WIDTH, HEIGHT);
     ::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
@@ -147,6 +145,7 @@ int main()
     /* Position GBuffer */
     unsigned int gPosition;
     ::glGenTextures(1, &gPosition);
+    ::glActiveTexture(GL_TEXTURE0 + 0);
     ::glBindTexture(GL_TEXTURE_2D, gPosition);
     ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
     ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -156,6 +155,7 @@ int main()
     /* Normal GBuffer */
     unsigned int gNormal;
     ::glGenTextures(1, &gNormal);
+    ::glActiveTexture(GL_TEXTURE0 + 1);
     ::glBindTexture(GL_TEXTURE_2D, gNormal);
     ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
     ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -165,6 +165,7 @@ int main()
     /* Color & Specular GBuffer */
     unsigned int gAlbedoSpec;
     ::glGenTextures(1, &gAlbedoSpec);
+    ::glActiveTexture(GL_TEXTURE0 + 2);
     ::glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
     ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -191,9 +192,9 @@ int main()
 #pragma endregion
 
     /* Load texture */
-    uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
-    uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
-    uint transparentWindowTexture = Util::LoadImage("./resource/window.png", GL_RGBA, GL_RGBA, 2);
+    uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 3);
+    uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 4);
+    uint transparentWindowTexture = Util::LoadImage("./resource/window.png", GL_RGBA, GL_RGBA, 5);
 
     /* render loop */
     while (window.isOpen())
@@ -212,6 +213,8 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(FOV), W_H_ratio, 0.1f, 100.0f);
 
 #pragma region [GEOMETRY PASS] Render geometry/color into GBuffer
+
+        ::glDisable(GL_BLEND);
 
         ::glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 
@@ -233,7 +236,7 @@ int main()
         shaderGeometryPass.SetUniformMat4("projection", projection);
         shaderGeometryPass.SetUniformMat4("view", view);
         shaderGeometryPass.SetUniformMat4("model", glm::mat4(1.0f));
-        shaderGeometryPass.SetUniformInt("tex", 0);
+        shaderGeometryPass.SetUniformInt("tex", 3);
 
         // 5. Draw call
         for (auto i = 0; i < gCubePositions.size(); i++)
@@ -262,7 +265,7 @@ int main()
         shaderGeometryPass.SetUniformMat4("projection", projection);
         shaderGeometryPass.SetUniformMat4("view", view);
         shaderGeometryPass.SetUniformMat4("model", glm::mat4(1.0f));
-        shaderGeometryPass.SetUniformInt("tex", 1);
+        shaderGeometryPass.SetUniformInt("tex", 4);
 
         // 5. Draw call
         ::glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -273,19 +276,10 @@ int main()
 
 #pragma endregion
 
-#pragma region [LIGHT PASS] Render lighting
+#pragma region [DEFERRED PASS] Render lighting
 
         ::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        ::glActiveTexture(GL_TEXTURE0 + 3);
-        ::glBindTexture(GL_TEXTURE_2D, gPosition);
-
-        ::glActiveTexture(GL_TEXTURE0 + 4);
-        ::glBindTexture(GL_TEXTURE_2D, gNormal);
-
-        ::glActiveTexture(GL_TEXTURE0 + 5);
-        ::glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
 
 #pragma region [Draw Quad]
 
@@ -299,9 +293,9 @@ int main()
         deferredLightingPass.Bind();
 
         // 4. Upload shader parameters
-        deferredLightingPass.SetUniformInt("gPosition", 3);
-        deferredLightingPass.SetUniformInt("gNormal", 4);
-        deferredLightingPass.SetUniformInt("gAlbedoSpec", 5);
+        deferredLightingPass.SetUniformInt("gPosition", 0);
+        deferredLightingPass.SetUniformInt("gNormal", 1);
+        deferredLightingPass.SetUniformInt("gAlbedoSpec", 2);
 
         for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
         {
@@ -324,6 +318,13 @@ int main()
         ::glBlitFramebuffer(0, 0, WIDTH, HEIGHT, 0, 0, WIDTH, HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
         ::glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#pragma endregion
+
+#pragma region [FORWARD PASS] Render light cube & trnasparent
+
+        ::glEnable(GL_BLEND);
+        ::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 #pragma region [Draw Light]
 
@@ -354,14 +355,14 @@ int main()
 #pragma endregion 
 
 #pragma region [Draw Transparent]
-
+        
         // Sort transparent objects
         std::vector<glm::vec3> windowSortedPosition(gTransparentWindowPosition.begin(), gTransparentWindowPosition.end());
         std::sort(windowSortedPosition.begin(), windowSortedPosition.end(), [&camera](const glm::vec3& left, const glm::vec3& right) -> bool
             {
                 float distanceLeft = glm::length(camera.GetPosition() - left);
                 float distanceRight = glm::length(camera.GetPosition() - right);
-                return distanceLeft < distanceRight;
+                return distanceLeft > distanceRight;
             });
 
         // 1. Bind vertex attribute
@@ -376,18 +377,17 @@ int main()
         // 4. Upload shader parameters
         windowShader.SetUniformMat4("view", view);
         windowShader.SetUniformMat4("projection", projection);
-        windowShader.SetUniformInt("tex", 2);
+        windowShader.SetUniformInt("tex", 5);
 
         for (unsigned int i = 0; i < windowSortedPosition.size(); i++)
         {
             model = glm::translate(glm::mat4(1.0f), windowSortedPosition[i]);
-            model = glm::scale(model, glm::vec3(0.2f));
+            model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             windowShader.SetUniformMat4("model", model);
 
             // 5. Draw call
             ::glDrawArrays(GL_TRIANGLES, 0, 6);
         }
-
 
 #pragma endregion
 
@@ -410,5 +410,5 @@ int main()
     ::glDeleteTextures(1, &boxTexture);
     ::glDeleteTextures(1, &planeTexture);
 
-    return 1;
+    return 0;
 }

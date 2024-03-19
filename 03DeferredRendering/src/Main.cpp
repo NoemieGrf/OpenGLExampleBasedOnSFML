@@ -300,6 +300,10 @@ int main()
 
         ::glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+#pragma endregion
+
+#pragma region [FORWARD PASS] Render light cube
+
 #pragma region [Draw Light]
 
         // 1. Bind vertex attribute
@@ -343,5 +347,5 @@ int main()
     ::glDeleteVertexArrays(1, &cubeVertexArray);
     ::glDeleteVertexArrays(1, &quadVertexArray);
 
-    return 1;
+    return 0;
 }
