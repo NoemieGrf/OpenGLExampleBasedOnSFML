@@ -1,11 +1,10 @@
-
 #include <iostream>
+#include <string>
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <sfml/Window.hpp>
-#include <sfml/Graphics/Image.hpp>
 
 #include "Glad/Glad.h"
 #include "Shader/Shader.h"
@@ -13,8 +12,12 @@
 #include "GlobalData/Plane.h"
 #include "GlobalData/Cube.h"
 #include "GlobalData/Light.h"
+#include "Object/Object.h"
+#include "Vertex/VertexData.hpp"
+#include "Texture/Texture.h"
+#include "Material/Material.h"
 #include "GlobalData/Quad.h"
-#include "Utility/Util.hpp"
+#include "FrameBuffer/GBuffer.h"
 
 using uint = unsigned int;
 
@@ -41,69 +44,10 @@ int main()
     ::glViewport(0, 0, WIDTH, HEIGHT);
     ::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
-#pragma region [Plane VBO & VAO]
-
-    /* [VBO] Create vertex buffer for plane */
-    uint planeVertexBuffer;	// this is a handle
-    ::glGenBuffers(1, &planeVertexBuffer);
-    ::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
-    ::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gPlaneVertices.size(), gPlaneVertices.data(), GL_STATIC_DRAW);
-
-    /* [VAO] Generate vertex array for plane and bind it */
-    uint planeVertexArray;
-    ::glGenVertexArrays(1, &planeVertexArray);
-    ::glBindVertexArray(planeVertexArray);
-    /* Open vertex attrib */
-    ::glEnableVertexAttribArray(0);
-    ::glEnableVertexAttribArray(1);
-    ::glEnableVertexAttribArray(2);
-    ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    ::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-
-#pragma endregion
-
-#pragma region [Box VBO & VAO]
-
-    /* [VBO] Create vertex buffer for cube */
-    uint cubeVertexBuffer;
-    ::glGenBuffers(1, &cubeVertexBuffer);
-    ::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
-    ::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gCubeVertices.size(), gCubeVertices.data(), GL_STATIC_DRAW);
-
-    /* [VAO] Generate vertex array for plane and bind it */
-    uint cubeVertexArray;
-    ::glGenVertexArrays(1, &cubeVertexArray);
-    ::glBindVertexArray(cubeVertexArray);
-    /* Open vertex attrib */
-    ::glEnableVertexAttribArray(0);
-    ::glEnableVertexAttribArray(1);
-    ::glEnableVertexAttribArray(2);
-    ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    ::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-
-#pragma endregion
-
-#pragma region [Quad VBO & VAO]
-
-    /* [VBO] Create vertex buffer for quad */
-    uint quadVertexBuffer;
-    ::glGenBuffers(1, &quadVertexBuffer);
-    ::glBindBuffer(GL_ARRAY_BUFFER, quadVertexBuffer);
-    ::glBufferData(GL_ARRAY_BUFFER, sizeof(float) * gQuadVertices.size(), gQuadVertices.data(), GL_STATIC_DRAW);
-
-    /* [VAO] Generate vertex array for quad and bind it */
-    uint quadVertexArray;
-    ::glGenVertexArrays(1, &quadVertexArray);
-    ::glBindVertexArray(quadVertexArray);
-    /* Open vertex attrib */
-    ::glEnableVertexAttribArray(0);
-    ::glEnableVertexAttribArray(1);
-    ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-    ::glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-
-#pragma endregion
+    /* Objects VAO & VBO */
+    LayoutVertexData<VertexLayout::PositionNormalTexcoord> planeVertexData(sizeof(float) * gPlaneVertices.size(), gPlaneVertices.data());
+    LayoutVertexData<VertexLayout::PositionNormalTexcoord> cubeVertexData(sizeof(float) * gCubeVertices.size(), gCubeVertices.data());
+    LayoutVertexData<VertexLayout::PositionTexcoord> quadVertexData(sizeof(float) * gQuadVertices.size(), gQuadVertices.data());
 
     /* Camera */
     Camera camera(glm::vec3(-5.0f, 4.0f, -5.0f), glm::radians(-30.0f), glm::radians(45.0f), glm::vec3(0, 1.0f, 0));
@@ -113,62 +57,35 @@ int main()
     Shader deferredLightingPass("glsl/deferredPass.vert", "glsl/deferredPass.frag");
     Shader lightShader("glsl/light.vert", "glsl/light.frag");
 
-#pragma region [GBuffer]
+    /* Material */
+    Material planeMaterial{ 0.9f, 0.1f };
+    Material cubeMaterial{ 0.8f, 0.5f };
 
-    /* Create GBuffer */
-    unsigned int gBuffer;
-    ::glGenFramebuffers(1, &gBuffer);
-    ::glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-
-    /* Position GBuffer */
-    unsigned int gPosition;
-    ::glGenTextures(1, &gPosition);
-    ::glBindTexture(GL_TEXTURE_2D, gPosition);
-    ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-    ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    ::glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-
-    /* Normal GBuffer */
-    unsigned int gNormal;
-    ::glGenTextures(1, &gNormal);
-    ::glBindTexture(GL_TEXTURE_2D, gNormal);
-    ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-    ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    ::glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-
-    /* Color & Specular GBuffer */
-    unsigned int gAlbedoSpec;
-    ::glGenTextures(1, &gAlbedoSpec);
-    ::glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-    ::glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    ::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    ::glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
-
-    /* Set attachments */
-    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    ::glDrawBuffers(3, attachments);
-
-    /* Depth buffer */
-    unsigned int rboDepth;
-    ::glGenRenderbuffers(1, &rboDepth);
-    ::glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    ::glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
-    ::glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
-
-    /* Unbind frame buffer */
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-#pragma endregion
+    /* GBuffer */
+    GBuffer gBuffer(WIDTH, HEIGHT, 0, 1, 2);
 
     /* Load texture */
-    uint boxTexture = RenderCommand::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
-    uint planeTexture = RenderCommand::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
+    Texture cubeTexture("./resource/box.jpg", 0);
+    Texture planeTexture("./resource/floor.jpg", 1);
+
+    /* Geometry pass objects */
+    std::vector<Object> geometryPassObejcts;
+    geometryPassObejcts.emplace_back(&planeVertexData, &shaderGeometryPass, &planeTexture, &planeMaterial);
+    for (auto i = 0; i < gCubePositions.size(); i++)
+    {
+        Object cubeObj(&cubeVertexData, &shaderGeometryPass, &cubeTexture, &cubeMaterial);
+        cubeObj.SetPosition(gCubePositions[i]);
+
+        geometryPassObejcts.push_back(cubeObj);
+    }
+
+    /* Light pass screen quad object */
+    Object lightPassQuad(&quadVertexData, &deferredLightingPass);
+
+    /* Forward pass objects */
+    std::vector<Object> geometryPassObejcts;
+
+    
 
     /* render loop */
     while (window.isOpen())
@@ -188,7 +105,7 @@ int main()
 
 #pragma region [GEOMETRY PASS] Render geometry/color into GBuffer
 
-        ::glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+        ::glBindFramebuffer(GL_FRAMEBUFFER, gBuffer.GetFrameBufferHandle());
 
         ::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -337,15 +254,6 @@ int main()
         /* Swap buffer */
         window.display();
     }
-
-    ::glDeleteBuffers(1, &cubeVertexBuffer);
-    ::glDeleteBuffers(1, &planeVertexBuffer);
-    ::glDeleteBuffers(1, &quadVertexBuffer);
-    ::glDeleteTextures(1, &boxTexture);
-    ::glDeleteTextures(1, &planeTexture);
-    ::glDeleteVertexArrays(1, &planeVertexArray);
-    ::glDeleteVertexArrays(1, &cubeVertexArray);
-    ::glDeleteVertexArrays(1, &quadVertexArray);
 
     return 0;
 }
