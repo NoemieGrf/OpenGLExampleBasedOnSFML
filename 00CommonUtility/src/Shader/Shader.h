@@ -14,9 +14,9 @@ class Shader
 public:
 	Shader(const char* vertexPath, const char* fragmentPath);
 
-	~Shader();
+	~Shader() = default;
 
-	unsigned int GetHandle();
+	void Bind();
 
 	void SetUniformBool(const std::string& name, bool value) const;
 	void SetUniformInt(const std::string& name, int value) const;
