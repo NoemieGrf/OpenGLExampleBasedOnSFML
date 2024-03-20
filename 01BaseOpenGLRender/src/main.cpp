@@ -11,8 +11,8 @@
 #include "Camera/Camera.h"
 #include "GlobalData/Plane.h"
 #include "GlobalData/Cube.h"
-#include "Object/Object.h"
-#include "Vertex/VertexData.hpp"
+#include "Utility/RenderCommand.hpp"
+#include "Object/Object.hpp"
 #include "Texture/Texture.h"
 
 using uint = unsigned int;
@@ -40,11 +40,11 @@ int main()
 	::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
 	/* Objects VAO & VBO */
-	LayoutVertexData<VertexLayout::PositionNormalTexcoord> planeVertexData(sizeof(float) * gPlaneVertices.size(), gPlaneVertices.data());
-	LayoutVertexData<VertexLayout::PositionNormalTexcoord> cubeVertexData(sizeof(float) * gCubeVertices.size(), gCubeVertices.data());
+	Object<VertexLayout::PositionNormalTexcoord> plane(sizeof(float) * gPlaneVertices.size(), gPlaneVertices.data());
+	Object<VertexLayout::PositionNormalTexcoord> cube(sizeof(float) * gCubeVertices.size(), gCubeVertices.data());
 
 	/* Load texture */
-	Texture cubeTexture("./resource/box.jpg", 0);
+	Texture boxTexture("./resource/box.jpg", 0);
 	Texture planeTexture("./resource/floor.jpg", 1);
 
 	/* Shader */
@@ -52,17 +52,6 @@ int main()
 
 	/* Camera */
 	Camera camera(glm::vec3(-5.0f, 4.0f, -5.0f), glm::radians(-30.0f), glm::radians(45.0f), glm::vec3(0, 1.0f, 0));
-
-	/* Object */
-	std::vector<Object> opaqueObjects;
-	opaqueObjects.emplace_back(&planeVertexData, &shader, &planeTexture);
-	for (auto i = 0; i < gCubePositions.size(); i++)
-	{
-		Object cubeObj(&cubeVertexData, &shader, &cubeTexture);
-		cubeObj.SetPosition(gCubePositions[i]);
-
-		opaqueObjects.push_back(cubeObj);
-	}
 	
 	while (window.isOpen())
 	{
@@ -83,25 +72,29 @@ int main()
 
 #pragma region [Forward Pass]
 
-		for (auto& renderObject : opaqueObjects)
+		/* Draw plane */
+		RenderCommand::DrawPrepare(plane, shader);
+
+		shader.SetUniformMat4("model", glm::mat4(1.0f));
+		shader.SetUniformMat4("view", view);
+		shader.SetUniformMat4("projection", projection);
+		shader.SetUniformInt("tex", planeTexture.GetSlot());
+
+		RenderCommand::DrawObject(plane);
+
+		/* Draw box */
+		RenderCommand::DrawPrepare(cube, shader);
+
+		shader.SetUniformMat4("view", view);
+		shader.SetUniformMat4("projection", projection);
+		shader.SetUniformInt("tex", boxTexture.GetSlot());
+
+		for (auto i = 0; i < gCubePositions.size(); i++)
 		{
-			// 1. Bind vertex attribute
-			::glBindVertexArray(renderObject.GetVertexData()->GetVertexArrayHandle());
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), gCubePositions[i]);
+			shader.SetUniformMat4("model", model);
 
-			// 2. Bind vertex array
-			::glBindBuffer(GL_ARRAY_BUFFER, renderObject.GetVertexData()->GetVertexBufferHandle());
-
-			// 3. Bind shader program
-			::glUseProgram(renderObject.GetShader()->GetHandle());
-
-			// 4. Upload uniforms
-			renderObject.GetShader()->SetUniformMat4("model", renderObject.GetModelMatrix());
-			renderObject.GetShader()->SetUniformMat4("view", view);
-			renderObject.GetShader()->SetUniformMat4("projection", projection);
-			renderObject.GetShader()->SetUniformInt("tex", renderObject.GetMainTexture()->GetSlot());
-
-			// 5. Draw call
-			::glDrawArrays(GL_TRIANGLES, 0, renderObject.GetVertexData()->GetTriangleNum());
+			RenderCommand::DrawObject(cube);
 		}
 
 #pragma endregion

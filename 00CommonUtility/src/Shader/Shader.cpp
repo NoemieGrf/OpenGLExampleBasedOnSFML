@@ -55,7 +55,7 @@ Shader::~Shader()
 	::glDeleteProgram(_programHandle);
 }
 
-unsigned int Shader::GetHandle() const
+unsigned int Shader::GetHandle()
 {
 	return _programHandle;
 }

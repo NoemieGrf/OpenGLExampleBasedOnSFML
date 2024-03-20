@@ -16,14 +16,14 @@
     <Filter Include="src\Shader">
       <UniqueIdentifier>{c8678212-2244-4330-bf2d-437fc0793f98}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Utility">
+      <UniqueIdentifier>{f05c5fbd-dbde-4388-86ff-637018b7ece1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Object">
       <UniqueIdentifier>{990316a6-ccff-4172-a10c-6278206510db}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Texture">
       <UniqueIdentifier>{06163b59-0141-438d-b36f-778fdcd5fa56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Vertex">
-      <UniqueIdentifier>{5ceedab7-7713-48e0-a4d3-af18e081f49a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,9 +39,6 @@
     <ClCompile Include="src\Texture\Texture.cpp">
       <Filter>src\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="src\Object\Object.cpp">
-      <Filter>src\Object</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera\Camera.h">
@@ -52,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="src\Glad\Khrplatform.h">
       <Filter>src\Glad</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utility\RenderCommand.hpp">
+      <Filter>src\Utility</Filter>
     </ClInclude>
     <ClInclude Include="src\GlobalData\Cube.h">
       <Filter>src\GlobalData</Filter>
@@ -74,11 +74,8 @@
     <ClInclude Include="src\Texture\Texture.h">
       <Filter>src\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="src\Object\Object.h">
+    <ClInclude Include="src\Object\Object.hpp">
       <Filter>src\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vertex\VertexData.hpp">
-      <Filter>src\Vertex</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

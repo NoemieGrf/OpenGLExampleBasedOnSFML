@@ -1,29 +1,18 @@
 #pragma once
 
-#include "../Glad/Glad.h"
-
 enum class VertexLayout
 {
-    PositionTexcoord,
-    PositionNormalTexcoord
+	PositionTexcoord,
+	PositionNormalTexcoord
 };
 
-class VertexData
-{
-public:
-    virtual ~VertexData() = default;
 
-public:
-    virtual unsigned int GetVertexBufferHandle() const = 0;
-    virtual unsigned int GetVertexArrayHandle() const = 0;
-    virtual unsigned int GetTriangleNum() const = 0;
-};
 
 template<VertexLayout Layout>
-class LayoutVertexData : public VertexData
+class Object
 {
 public:
-    LayoutVertexData(unsigned int dataSizeInBytes, float* data)
+	Object(unsigned int dataSizeInBytes, float* data)
     {
         /* [VBO] Create vertex buffer */
         ::glGenBuffers(1, &_vertexBufferHandle);
@@ -59,24 +48,24 @@ public:
     }
 
 public:
-    unsigned int GetVertexBufferHandle() const override
+    unsigned int GetVertexBufferHandle()
     {
         return _vertexBufferHandle;
     }
 
-    unsigned int GetVertexArrayHandle() const override
+	unsigned int GetVertexArrayHandle()
     {
         return _vertenArrayHanle;
     }
 
-    unsigned int GetTriangleNum() const override
+    unsigned int GetTriangleNum()
     {
         return _triangleNum;
     }
 
 private:
     unsigned int _triangleNum;
-    unsigned int _vertexBufferHandle;
-    unsigned int _vertenArrayHanle;
+	unsigned int _vertexBufferHandle;
+	unsigned int _vertenArrayHanle;
 };
 
