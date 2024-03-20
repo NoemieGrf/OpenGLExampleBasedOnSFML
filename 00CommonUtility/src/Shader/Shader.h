@@ -16,7 +16,7 @@ public:
 
 	~Shader();
 
-	unsigned int GetHandle();
+	unsigned int GetHandle() const;
 
 	void SetUniformBool(const std::string& name, bool value) const;
 	void SetUniformInt(const std::string& name, int value) const;

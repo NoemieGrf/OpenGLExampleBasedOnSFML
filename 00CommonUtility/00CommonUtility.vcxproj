@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="src\Camera\Camera.cpp" />
     <ClCompile Include="src\Glad\Glad.cpp" />
+    <ClCompile Include="src\Object\Object.cpp" />
     <ClCompile Include="src\Shader\Shader.cpp" />
     <ClCompile Include="src\Texture\Texture.cpp" />
   </ItemGroup>
@@ -25,10 +26,10 @@
     <ClInclude Include="src\GlobalData\Plane.h" />
     <ClInclude Include="src\GlobalData\Quad.h" />
     <ClInclude Include="src\GlobalData\TransparentWindow.h" />
-    <ClInclude Include="src\Object\Object.hpp" />
+    <ClInclude Include="src\Object\Object.h" />
     <ClInclude Include="src\Shader\Shader.h" />
     <ClInclude Include="src\Texture\Texture.h" />
-    <ClInclude Include="src\Utility\RenderCommand.hpp" />
+    <ClInclude Include="src\Vertex\VertexData.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
