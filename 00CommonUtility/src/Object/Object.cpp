@@ -1,9 +1,20 @@
 #include "Object.h"
 
+Object::Object(const VertexData* pVertexData, const Shader* pShader)
+	: Object(pVertexData, pShader, nullptr, nullptr)
+{
+}
+
 Object::Object(const VertexData* pVertexData, const Shader* pShader, const Texture* pMainTexture)
+	: Object(pVertexData, pShader, pMainTexture, nullptr)
+{
+}
+
+Object::Object(const VertexData* pVertexData, const Shader* pShader, const Texture* pMainTexture, const Material* pMaterial)
 	: _pVertexData(pVertexData)
 	, _pShader(pShader)
 	, _pMainTexture(pMainTexture)
+	, _pMaterial(pMaterial)
 	, _position(0.0f, 0.0f, 0.0f)
 	, _rotation(glm::identity<glm::quat>())
 	, _scale(1.0f, 1.0f, 1.0f)
@@ -51,4 +62,9 @@ auto Object::GetMainTexture() const -> const Texture*
 auto Object::GetShader() const -> const Shader*
 {
 	return _pShader;
+}
+
+auto Object::GetMaterial() const -> const Material*
+{
+	return _pMaterial;
 }
