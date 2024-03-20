@@ -25,9 +25,6 @@
     <Filter Include="src\Vertex">
       <UniqueIdentifier>{5ceedab7-7713-48e0-a4d3-af18e081f49a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Material">
-      <UniqueIdentifier>{43853b11-e897-4f0c-8e93-5fb6fa778f7c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera\Camera.cpp">
@@ -82,9 +79,6 @@
     </ClInclude>
     <ClInclude Include="src\Vertex\VertexData.hpp">
       <Filter>src\Vertex</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Material\Material.h">
-      <Filter>src\Material</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

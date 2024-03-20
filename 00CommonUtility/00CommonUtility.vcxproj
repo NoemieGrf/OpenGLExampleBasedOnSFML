@@ -26,7 +26,6 @@
     <ClInclude Include="src\GlobalData\Plane.h" />
     <ClInclude Include="src\GlobalData\Quad.h" />
     <ClInclude Include="src\GlobalData\TransparentWindow.h" />
-    <ClInclude Include="src\Material\Material.h" />
     <ClInclude Include="src\Object\Object.h" />
     <ClInclude Include="src\Shader\Shader.h" />
     <ClInclude Include="src\Texture\Texture.h" />

@@ -55,18 +55,13 @@ int main()
 
 	/* Object */
 	std::vector<Object> opaqueObjects;
+	opaqueObjects.emplace_back(&planeVertexData, &shader, &planeTexture);
+	for (auto i = 0; i < gCubePositions.size(); i++)
 	{
-		// Add plane
-		opaqueObjects.emplace_back(&planeVertexData, &shader, &planeTexture);
+		Object cubeObj(&cubeVertexData, &shader, &cubeTexture);
+		cubeObj.SetPosition(gCubePositions[i]);
 
-		// Add cubes
-		for (auto i = 0; i < gCubePositions.size(); i++)
-		{
-			Object cubeObj(&cubeVertexData, &shader, &cubeTexture);
-			cubeObj.SetPosition(gCubePositions[i]);
-
-			opaqueObjects.push_back(cubeObj);
-		}
+		opaqueObjects.push_back(cubeObj);
 	}
 	
 	while (window.isOpen())
