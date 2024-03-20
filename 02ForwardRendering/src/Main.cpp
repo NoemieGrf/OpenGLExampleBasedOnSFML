@@ -76,8 +76,8 @@ int main()
     ::glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 
     /* Load texture */
-    uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
-    uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
+    uint boxTexture = RenderCommand::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 0);
+    uint planeTexture = RenderCommand::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 1);
 
     /* Camera & Shader */
     Camera camera(glm::vec3(-5.0f, 4.0f, -5.0f), glm::radians(-30.0f), glm::radians(45.0f), glm::vec3(0, 1.0f, 0));

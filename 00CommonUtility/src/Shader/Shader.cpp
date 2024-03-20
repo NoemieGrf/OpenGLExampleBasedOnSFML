@@ -16,8 +16,8 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	const char* vertexSource = vertexTmp.c_str();
 
 	unsigned int vertexHandle = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexHandle, 1, &vertexSource, nullptr);
-	glCompileShader(vertexHandle);
+	::glShaderSource(vertexHandle, 1, &vertexSource, nullptr);
+	::glCompileShader(vertexHandle);
 	CheckCompileErrors(vertexHandle, "VERTEX");
 
 	// pixel
@@ -34,55 +34,60 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 	const char* fragmentSource = fragmentTmp.c_str();
 
 	unsigned int pixelHandle = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(pixelHandle, 1, &fragmentSource, nullptr);
-	glCompileShader(pixelHandle);
+	::glShaderSource(pixelHandle, 1, &fragmentSource, nullptr);
+	::glCompileShader(pixelHandle);
 	CheckCompileErrors(pixelHandle, "FRAGMENT");
 
 	// link
 	_programHandle = glCreateProgram();
-	glAttachShader(_programHandle, vertexHandle);
-	glAttachShader(_programHandle, pixelHandle);
-	glLinkProgram(_programHandle);
+	::glAttachShader(_programHandle, vertexHandle);
+	::glAttachShader(_programHandle, pixelHandle);
+	::glLinkProgram(_programHandle);
 	CheckCompileErrors(_programHandle, "PROGRAM");
 
 	// clear up
-	glDeleteShader(vertexHandle);
-	glDeleteShader(pixelHandle);
+	::glDeleteShader(vertexHandle);
+	::glDeleteShader(pixelHandle);
 }
 
-void Shader::Bind() 
+Shader::~Shader()
 {
-	glUseProgram(_programHandle);
+	::glDeleteProgram(_programHandle);
+}
+
+unsigned int Shader::GetHandle()
+{
+	return _programHandle;
 }
 
 void Shader::SetUniformBool(const std::string& name, bool value) const 
 { 
-	glUniform1i(glGetUniformLocation(_programHandle, name.c_str()), static_cast<int>(value));
+	::glUniform1i(glGetUniformLocation(_programHandle, name.c_str()), static_cast<int>(value));
 }
 
 void Shader::SetUniformInt(const std::string& name, int value) const 
 { 
-	glUniform1i(glGetUniformLocation(_programHandle, name.c_str()), value);
+	::glUniform1i(glGetUniformLocation(_programHandle, name.c_str()), value);
 }
 
 void Shader::SetUniformFloat(const std::string& name, float value) const 
 { 
-	glUniform1f(glGetUniformLocation(_programHandle, name.c_str()), value);
+	::glUniform1f(glGetUniformLocation(_programHandle, name.c_str()), value);
 }
 
 void Shader::SetUniformMat4(const std::string& name, glm::mat4 mat) const 
 { 
-	glUniformMatrix4fv(glGetUniformLocation(_programHandle, name.c_str()), 1, GL_FALSE, value_ptr(mat));
+	::glUniformMatrix4fv(glGetUniformLocation(_programHandle, name.c_str()), 1, GL_FALSE, value_ptr(mat));
 }
 
 void Shader::SetUniformVec3(const std::string& name, glm::vec3 vec) const
 {
-	glUniform3fv(glGetUniformLocation(_programHandle, name.c_str()), 1, &vec[0]);
+	::glUniform3fv(glGetUniformLocation(_programHandle, name.c_str()), 1, &vec[0]);
 }
 
 void Shader::SetUniformVec3(const std::string& name, float x, float y, float z) const
 {
-	glUniform3f(glGetUniformLocation(_programHandle, name.c_str()), x, y, z);
+	::glUniform3f(glGetUniformLocation(_programHandle, name.c_str()), x, y, z);
 }
 
 void Shader::CheckCompileErrors(unsigned int id, const std::string& type)
@@ -92,19 +97,19 @@ void Shader::CheckCompileErrors(unsigned int id, const std::string& type)
 
 	if (type != "PROGRAM")
 	{
-		glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+		::glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 		if (!success)
 		{
-			glGetShaderInfoLog(id, 1024, nullptr, infoLog);
+			::glGetShaderInfoLog(id, 1024, nullptr, infoLog);
 			std::cout << "Shader Compile Error : " << infoLog << std::endl;
 		}
 	}
 	else
 	{
-		glGetProgramiv(id, GL_LINK_STATUS, &success);
+		::glGetProgramiv(id, GL_LINK_STATUS, &success);
 		if (!success)
 		{
-			glGetProgramInfoLog(id, 1024, nullptr, infoLog);
+			::glGetProgramInfoLog(id, 1024, nullptr, infoLog);
 			std::cout << "Program Linking Error : " << infoLog << std::endl;
 		}
 	}

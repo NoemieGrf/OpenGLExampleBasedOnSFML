@@ -192,9 +192,9 @@ int main()
 #pragma endregion
 
     /* Load texture */
-    uint boxTexture = Util::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 3);
-    uint planeTexture = Util::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 4);
-    uint transparentWindowTexture = Util::LoadImage("./resource/window.png", GL_RGBA, GL_RGBA, 5);
+    uint boxTexture = RenderCommand::LoadImage("./resource/box.jpg", GL_RGBA, GL_RGBA, 3);
+    uint planeTexture = RenderCommand::LoadImage("./resource/floor.jpg", GL_RGBA, GL_RGBA, 4);
+    uint transparentWindowTexture = RenderCommand::LoadImage("./resource/window.png", GL_RGBA, GL_RGBA, 5);
 
     /* render loop */
     while (window.isOpen())
