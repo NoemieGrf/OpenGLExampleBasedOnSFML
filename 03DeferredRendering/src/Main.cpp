@@ -56,9 +56,9 @@ int main()
     Camera camera(glm::vec3(-5.0f, 4.0f, -5.0f), glm::radians(-30.0f), glm::radians(45.0f), glm::vec3(0, 1.0f, 0));
 
     /* Shader */
-    Shader shaderGeometryPass("glsl/geometryPass.vert", "glsl/geometryPass.frag");
-    Shader deferredLightingPass("glsl/deferredPass.vert", "glsl/deferredPass.frag");
-    Shader lightShader("glsl/light.vert", "glsl/light.frag");
+    Shader geometryPassShader("glsl/geometryPass.vert", "glsl/geometryPass.frag");
+    Shader lightningPassShader("glsl/deferredPass.vert", "glsl/deferredPass.frag");
+    Shader forwardLightShader("glsl/light.vert", "glsl/light.frag");
 
     /* Material */
     Material planeMaterial{ 0.9f, 0.1f };
@@ -68,28 +68,30 @@ int main()
     GBuffer gBuffer(WIDTH, HEIGHT, 0, 1, 2);
 
     /* Load texture */
-    Texture cubeTexture("./resource/box.jpg", 0);
-    Texture planeTexture("./resource/floor.jpg", 1);
+    Texture cubeTexture("./resource/box.jpg", 3);
+    Texture planeTexture("./resource/floor.jpg", 4);
 
     /* Geometry pass objects */
     std::vector<uptr<Object>> geometryPassObejcts;
-    geometryPassObejcts.push_back(std::make_unique<Object>(&planeVertexData, &shaderGeometryPass, &planeTexture, &planeMaterial));
+    geometryPassObejcts.push_back(std::make_unique<Object>(&planeVertexData, &geometryPassShader, &planeTexture, &planeMaterial));
     for (auto i = 0; i < gCubePositions.size(); i++)
     {
-        uptr<Object> pCube = std::make_unique<Object>(&cubeVertexData, &shaderGeometryPass, &cubeTexture, &cubeMaterial);
+        uptr<Object> pCube = std::make_unique<Object>(&cubeVertexData, &geometryPassShader, &cubeTexture, &cubeMaterial);
         pCube->SetPosition(gCubePositions[i]);
 
         geometryPassObejcts.push_back(std::move(pCube));
     }
 
     /* Light pass screen quad object */
-    uptr<Object> pLightPassQuad = std::make_unique<Object>(&quadVertexData, &deferredLightingPass);
+    uptr<Object> pLightPassQuad = std::make_unique<Object>(&quadVertexData, &lightningPassShader);
 
     /* Forward pass objects */
     std::vector<uptr<Object>> pointLightObjects;
     for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
     {
-        uptr<PointLightObject> pLight = std::make_unique<PointLightObject>(&cubeVertexData, &lightShader);
+        uptr<PointLightObject> pLight = std::make_unique<PointLightObject>(&cubeVertexData, &forwardLightShader);
+        pLight->SetPosition(gMultiLightPosition[i]);
+        pLight->SetScale(glm::vec3(0.2, 0.2, 0.2));
         pLight->SetColor(gMultiLightColor[i]);
         pLight->SetLinerAttenuation(0.5);
         pLight->SetQuadraticAttenuation(0.3);
@@ -162,9 +164,10 @@ int main()
         ::glUseProgram(pLightPassQuad->GetShader()->GetHandle());
 
         // 4. Upload shader parameters
-        pLightPassQuad->GetShader()->SetUniformInt("gPosition", 2);
-        pLightPassQuad->GetShader()->SetUniformInt("gNormal", 3);
-        pLightPassQuad->GetShader()->SetUniformInt("gAlbedoSpec", 4);
+        pLightPassQuad->GetShader()->SetUniformInt("gPosition", gBuffer.GetPositionTextureSlot());
+        pLightPassQuad->GetShader()->SetUniformInt("gNormal", gBuffer.GetNormalTextureSlot());
+        pLightPassQuad->GetShader()->SetUniformInt("gAlbedoSpec", gBuffer.GetAlbedoTextureSlot());
+        pLightPassQuad->GetShader()->SetUniformVec3("viewPos", camera.GetPosition());
 
         for (unsigned int i = 0; i < pointLightObjects.size(); i++)
         {
@@ -193,7 +196,7 @@ int main()
 #pragma region [FORWARD PASS] Render light cube
 
 #pragma region [Draw Light]
-
+        
         for (auto& pRenderObject : pointLightObjects)
         {
             // 1. Bind vertex attribute
@@ -216,7 +219,7 @@ int main()
             // 5. Draw call
             ::glDrawArrays(GL_TRIANGLES, 0, pRenderObject->GetVertexData()->GetTriangleNum());
         }
-
+        
 
 #pragma endregion 
 

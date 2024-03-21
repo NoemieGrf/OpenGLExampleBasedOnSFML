@@ -9,6 +9,11 @@ public:
 	~GBuffer() override;
 
 public:
+	auto GetPositionTextureSlot() const -> int;
+	auto GetNormalTextureSlot() const -> int;
+	auto GetAlbedoTextureSlot() const -> int;
+
+public:
 	int _posTexSlot;
 	unsigned int _posTexHandle;
 

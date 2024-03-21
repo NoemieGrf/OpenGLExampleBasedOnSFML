@@ -63,3 +63,18 @@ GBuffer::~GBuffer()
     ::glDeleteTextures(1, &_albedoTexHandle);
     ::glDeleteFramebuffers(1, &_frameBufferHandle);
 }
+
+auto GBuffer::GetPositionTextureSlot() const -> int
+{
+    return _posTexSlot;
+}
+
+auto GBuffer::GetNormalTextureSlot() const -> int
+{
+    return _normalTexSlot;
+}
+
+auto GBuffer::GetAlbedoTextureSlot() const -> int
+{
+    return _albedoTexSlot;
+}
