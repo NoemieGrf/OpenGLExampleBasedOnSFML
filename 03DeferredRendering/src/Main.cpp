@@ -138,6 +138,8 @@ int main()
             pRenderObject->GetShader()->SetUniformMat4("view", view);
             pRenderObject->GetShader()->SetUniformMat4("projection", projection);
             pRenderObject->GetShader()->SetUniformInt("tex", pRenderObject->GetMainTexture()->GetSlot());
+            pRenderObject->GetShader()->SetUniformFloat("roughness", pRenderObject->GetMaterial()->roughness);
+            pRenderObject->GetShader()->SetUniformFloat("metallic", pRenderObject->GetMaterial()->metallic);
 
             // 5. Draw call
             ::glDrawArrays(GL_TRIANGLES, 0, pRenderObject->GetVertexData()->GetTriangleNum());
