@@ -154,37 +154,36 @@ int main()
         ::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#pragma region [Draw Quad]
-
-        // 1. Bind vertex attribute
-        ::glBindVertexArray(pLightPassQuad->GetVertexData()->GetVertexArrayHandle());
-
-        // 2. Bind vertex array
-        ::glBindBuffer(GL_ARRAY_BUFFER, pLightPassQuad->GetVertexData()->GetVertexBufferHandle());
-
-        // 3. Bind shader program
-        ::glUseProgram(pLightPassQuad->GetShader()->GetHandle());
-
-        // 4. Upload shader parameters
-        pLightPassQuad->GetShader()->SetUniformInt("gPosition", gBuffer.GetPositionTextureSlot());
-        pLightPassQuad->GetShader()->SetUniformInt("gNormal", gBuffer.GetNormalTextureSlot());
-        pLightPassQuad->GetShader()->SetUniformInt("gAlbedoSpec", gBuffer.GetAlbedoTextureSlot());
-        pLightPassQuad->GetShader()->SetUniformVec3("viewPos", camera.GetPosition());
-
-        for (unsigned int i = 0; i < pointLightObjects.size(); i++)
         {
-            PointLightObject* pPointLight = dynamic_cast<PointLightObject*>(pointLightObjects[i].get());
+            // 1. Bind vertex attribute
+            ::glBindVertexArray(pLightPassQuad->GetVertexData()->GetVertexArrayHandle());
 
-            pLightPassQuad->GetShader()->SetUniformVec3("lights[" + std::to_string(i) + "].Position", pPointLight->GetPosition());
-            pLightPassQuad->GetShader()->SetUniformVec3("lights[" + std::to_string(i) + "].Color", pPointLight->GetColor());
-            pLightPassQuad->GetShader()->SetUniformFloat("lights[" + std::to_string(i) + "].Linear", pPointLight->GetLinerAttenuation());
-            pLightPassQuad->GetShader()->SetUniformFloat("lights[" + std::to_string(i) + "].Quadratic", pPointLight->GetQuadraticAttenuation());
+            // 2. Bind vertex array
+            ::glBindBuffer(GL_ARRAY_BUFFER, pLightPassQuad->GetVertexData()->GetVertexBufferHandle());
+
+            // 3. Bind shader program
+            ::glUseProgram(pLightPassQuad->GetShader()->GetHandle());
+
+            // 4. Upload shader parameters
+            pLightPassQuad->GetShader()->SetUniformInt("gPosition", gBuffer.GetPositionTextureSlot());
+            pLightPassQuad->GetShader()->SetUniformInt("gNormal", gBuffer.GetNormalTextureSlot());
+            pLightPassQuad->GetShader()->SetUniformInt("gAlbedoSpec", gBuffer.GetAlbedoTextureSlot());
+            pLightPassQuad->GetShader()->SetUniformVec3("viewPos", camera.GetPosition());
+
+            for (unsigned int i = 0; i < pointLightObjects.size(); i++)
+            {
+                PointLightObject* pPointLight = dynamic_cast<PointLightObject*>(pointLightObjects[i].get());
+
+                pLightPassQuad->GetShader()->SetUniformVec3("lights[" + std::to_string(i) + "].Position", pPointLight->GetPosition());
+                pLightPassQuad->GetShader()->SetUniformVec3("lights[" + std::to_string(i) + "].Color", pPointLight->GetColor());
+                pLightPassQuad->GetShader()->SetUniformFloat("lights[" + std::to_string(i) + "].Linear", pPointLight->GetLinerAttenuation());
+                pLightPassQuad->GetShader()->SetUniformFloat("lights[" + std::to_string(i) + "].Quadratic", pPointLight->GetQuadraticAttenuation());
+            }
+
+            // 5. Draw call
+            ::glDrawArrays(GL_TRIANGLES, 0, pLightPassQuad->GetVertexData()->GetTriangleNum());
+
         }
-
-        // 5. Draw call
-        ::glDrawArrays(GL_TRIANGLES, 0, pLightPassQuad->GetVertexData()->GetTriangleNum());
-
-#pragma endregion
 
         ::glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetFrameBufferHandle());
 
@@ -197,8 +196,6 @@ int main()
 
 #pragma region [FORWARD PASS] Render light cube
 
-#pragma region [Draw Light]
-        
         for (auto& pRenderObject : pointLightObjects)
         {
             // 1. Bind vertex attribute
@@ -221,9 +218,6 @@ int main()
             // 5. Draw call
             ::glDrawArrays(GL_TRIANGLES, 0, pRenderObject->GetVertexData()->GetTriangleNum());
         }
-        
-
-#pragma endregion 
 
 #pragma endregion
 
