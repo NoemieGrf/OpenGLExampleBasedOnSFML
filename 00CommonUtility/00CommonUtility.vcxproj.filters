@@ -28,6 +28,9 @@
     <Filter Include="src\Material">
       <UniqueIdentifier>{43853b11-e897-4f0c-8e93-5fb6fa778f7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\FrameBuffer">
+      <UniqueIdentifier>{ef1f81f4-2a12-478c-8dec-3199bc318fe5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera\Camera.cpp">
@@ -44,6 +47,12 @@
     </ClCompile>
     <ClCompile Include="src\Object\Object.cpp">
       <Filter>src\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameBuffer\FrameBuffer.cpp">
+      <Filter>src\FrameBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameBuffer\GBuffer.cpp">
+      <Filter>src\FrameBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="src\Material\Material.h">
       <Filter>src\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameBuffer\FrameBuffer.h">
+      <Filter>src\FrameBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameBuffer\GBuffer.h">
+      <Filter>src\FrameBuffer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

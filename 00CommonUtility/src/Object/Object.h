@@ -13,6 +13,7 @@ public:
 	Object(const VertexData* pVertexData, const Shader* pShader);
 	Object(const VertexData* pVertexData, const Shader* pShader, const Texture* pMainTexture);
 	Object(const VertexData* pVertexData, const Shader* pShader, const Texture* pMainTexture, const Material* pMaterial);
+	virtual ~Object() = default;
 
 public:
 	auto SetPosition(const glm::vec3& position) -> void;
@@ -26,7 +27,7 @@ public:
 	auto GetShader() const -> const Shader*;
 	auto GetMaterial() const -> const Material*;
 
-private:
+protected:
 	// World state
 	glm::vec3 _position;
 	glm::quat _rotation;
@@ -37,4 +38,23 @@ private:
 	const Texture* _pMainTexture;
 	const Shader* _pShader;
 	const Material* _pMaterial;
+};
+
+class PointLightObject : public Object
+{
+public:
+	PointLightObject(const VertexData* pVertexData, const Shader* pShader);
+
+public:
+	auto SetColor(const glm::vec3& color) -> void;
+	auto GetColor() const -> const glm::vec3&;
+	auto SetLinerAttenuation(float value) -> void;
+	auto GetLinerAttenuation() const -> float;
+	auto SetQuadraticAttenuation(float value) -> void;
+	auto GetQuadraticAttenuation() -> float;
+
+private:
+	glm::vec3 _color;
+	float _linerAttenuation;
+	float _quadraticAttenuation;
 };

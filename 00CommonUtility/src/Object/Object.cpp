@@ -68,3 +68,38 @@ auto Object::GetMaterial() const -> const Material*
 {
 	return _pMaterial;
 }
+
+PointLightObject::PointLightObject(const VertexData* pVertexData, const Shader* pShader)
+	: Object(pVertexData, pShader)
+{
+}
+
+auto PointLightObject::SetColor(const glm::vec3& color) -> void
+{
+	_color = color;
+}
+
+auto PointLightObject::GetColor() const -> const glm::vec3&
+{
+	return _color;
+}
+
+auto PointLightObject::SetLinerAttenuation(float value) -> void
+{
+	_linerAttenuation = value;
+}
+
+auto PointLightObject::GetLinerAttenuation() const -> float
+{
+	return _linerAttenuation;
+}
+
+auto PointLightObject::SetQuadraticAttenuation(float value) -> void
+{
+	_quadraticAttenuation = value;
+}
+
+auto PointLightObject::GetQuadraticAttenuation() -> float
+{
+	return _quadraticAttenuation;
+}

@@ -21,6 +21,9 @@
 
 using uint = unsigned int;
 
+template<typename T>
+using uptr = std::unique_ptr<T>;
+
 int main()
 {
     /* Init SFML window */
@@ -69,23 +72,30 @@ int main()
     Texture planeTexture("./resource/floor.jpg", 1);
 
     /* Geometry pass objects */
-    std::vector<Object> geometryPassObejcts;
-    geometryPassObejcts.emplace_back(&planeVertexData, &shaderGeometryPass, &planeTexture, &planeMaterial);
+    std::vector<uptr<Object>> geometryPassObejcts;
+    geometryPassObejcts.push_back(std::make_unique<Object>(&planeVertexData, &shaderGeometryPass, &planeTexture, &planeMaterial));
     for (auto i = 0; i < gCubePositions.size(); i++)
     {
-        Object cubeObj(&cubeVertexData, &shaderGeometryPass, &cubeTexture, &cubeMaterial);
-        cubeObj.SetPosition(gCubePositions[i]);
+        uptr<Object> pCube = std::make_unique<Object>(&cubeVertexData, &shaderGeometryPass, &cubeTexture, &cubeMaterial);
+        pCube->SetPosition(gCubePositions[i]);
 
-        geometryPassObejcts.push_back(cubeObj);
+        geometryPassObejcts.push_back(std::move(pCube));
     }
 
     /* Light pass screen quad object */
-    Object lightPassQuad(&quadVertexData, &deferredLightingPass);
+    uptr<Object> pLightPassQuad = std::make_unique<Object>(&quadVertexData, &deferredLightingPass);
 
     /* Forward pass objects */
-    std::vector<Object> geometryPassObejcts;
+    std::vector<uptr<Object>> pointLightObjects;
+    for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
+    {
+        uptr<PointLightObject> pLight = std::make_unique<PointLightObject>(&cubeVertexData, &lightShader);
+        pLight->SetColor(gMultiLightColor[i]);
+        pLight->SetLinerAttenuation(0.5);
+        pLight->SetQuadraticAttenuation(0.3);
 
-    
+        pointLightObjects.push_back(std::move(pLight));
+    }
 
     /* render loop */
     while (window.isOpen())
@@ -110,56 +120,26 @@ int main()
         ::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#pragma region [Draw Cube]
-        
-        // 1. Bind vertex attribute
-        ::glBindVertexArray(cubeVertexArray);
-
-        // 2. Bind vertex array
-        ::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
-
-        // 3. Bind shader program
-        shaderGeometryPass.Bind();
-
-        // 4. Upload shader parameters
-        shaderGeometryPass.SetUniformMat4("projection", projection);
-        shaderGeometryPass.SetUniformMat4("view", view);
-        shaderGeometryPass.SetUniformMat4("model", glm::mat4(1.0f));
-        shaderGeometryPass.SetUniformInt("tex", 0);
-
-        // 5. Draw call
-        for (auto i = 0; i < gCubePositions.size(); i++)
+        for (auto& pRenderObject : geometryPassObejcts)
         {
-            model = glm::translate(glm::mat4(1.0f), gCubePositions[i]);
-            shaderGeometryPass.SetUniformMat4("model", model);
+            // 1. Bind vertex attribute
+            ::glBindVertexArray(pRenderObject->GetVertexData()->GetVertexArrayHandle());
+
+            // 2. Bind vertex array
+            ::glBindBuffer(GL_ARRAY_BUFFER, pRenderObject->GetVertexData()->GetVertexBufferHandle());
+
+            // 3. Bind shader program
+            ::glUseProgram(pRenderObject->GetShader()->GetHandle());
+
+            // 4. Upload uniforms
+            pRenderObject->GetShader()->SetUniformMat4("model", pRenderObject->GetModelMatrix());
+            pRenderObject->GetShader()->SetUniformMat4("view", view);
+            pRenderObject->GetShader()->SetUniformMat4("projection", projection);
+            pRenderObject->GetShader()->SetUniformInt("tex", pRenderObject->GetMainTexture()->GetSlot());
 
             // 5. Draw call
-            ::glDrawArrays(GL_TRIANGLES, 0, 36);
+            ::glDrawArrays(GL_TRIANGLES, 0, pRenderObject->GetVertexData()->GetTriangleNum());
         }
-        
-#pragma endregion
-
-#pragma region [Draw Plane]
-
-        // 1. Bind vertex attribute
-        ::glBindVertexArray(planeVertexArray);
-
-        // 2. Bind vertex array
-        ::glBindBuffer(GL_ARRAY_BUFFER, planeVertexBuffer);
-
-        // 3. Bind shader program
-        shaderGeometryPass.Bind();
-
-        // 4. Upload shader parameters
-        shaderGeometryPass.SetUniformMat4("projection", projection);
-        shaderGeometryPass.SetUniformMat4("view", view);
-        shaderGeometryPass.SetUniformMat4("model", glm::mat4(1.0f));
-        shaderGeometryPass.SetUniformInt("tex", 1);
-
-        // 5. Draw call
-        ::glDrawArrays(GL_TRIANGLES, 0, 6);
-
-#pragma endregion
 
         ::glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -170,47 +150,38 @@ int main()
         ::glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        ::glActiveTexture(GL_TEXTURE0 + 2);
-        ::glBindTexture(GL_TEXTURE_2D, gPosition);
-
-        ::glActiveTexture(GL_TEXTURE0 + 3);
-        ::glBindTexture(GL_TEXTURE_2D, gNormal);
-
-        ::glActiveTexture(GL_TEXTURE0 + 4);
-        ::glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-
 #pragma region [Draw Quad]
 
         // 1. Bind vertex attribute
-        ::glBindVertexArray(quadVertexArray);
+        ::glBindVertexArray(pLightPassQuad->GetVertexData()->GetVertexArrayHandle());
 
         // 2. Bind vertex array
-        ::glBindBuffer(GL_ARRAY_BUFFER, quadVertexBuffer);
+        ::glBindBuffer(GL_ARRAY_BUFFER, pLightPassQuad->GetVertexData()->GetVertexBufferHandle());
 
         // 3. Bind shader program
-        deferredLightingPass.Bind();
+        ::glUseProgram(pLightPassQuad->GetShader()->GetHandle());
 
         // 4. Upload shader parameters
-        deferredLightingPass.SetUniformInt("gPosition", 2);
-        deferredLightingPass.SetUniformInt("gNormal", 3);
-        deferredLightingPass.SetUniformInt("gAlbedoSpec", 4);
+        pLightPassQuad->GetShader()->SetUniformInt("gPosition", 2);
+        pLightPassQuad->GetShader()->SetUniformInt("gNormal", 3);
+        pLightPassQuad->GetShader()->SetUniformInt("gAlbedoSpec", 4);
 
-        for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
+        for (unsigned int i = 0; i < pointLightObjects.size(); i++)
         {
-            deferredLightingPass.SetUniformVec3("lights[" + std::to_string(i) + "].Position", gMultiLightPosition[i]);
-            deferredLightingPass.SetUniformVec3("lights[" + std::to_string(i) + "].Color", gMultiLightColor[i]);
+            PointLightObject* pPointLight = dynamic_cast<PointLightObject*>(pointLightObjects[i].get());
 
-            const float linear = 0.5f;
-            const float quadratic = 0.3f;
-            deferredLightingPass.SetUniformFloat("lights[" + std::to_string(i) + "].Linear", linear);
-            deferredLightingPass.SetUniformFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+            pLightPassQuad->GetShader()->SetUniformVec3("lights[" + std::to_string(i) + "].Position", pPointLight->GetPosition());
+            pLightPassQuad->GetShader()->SetUniformVec3("lights[" + std::to_string(i) + "].Color", pPointLight->GetColor());
+            pLightPassQuad->GetShader()->SetUniformFloat("lights[" + std::to_string(i) + "].Linear", pPointLight->GetLinerAttenuation());
+            pLightPassQuad->GetShader()->SetUniformFloat("lights[" + std::to_string(i) + "].Quadratic", pPointLight->GetQuadraticAttenuation());
         }
 
-        ::glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        // 5. Draw call
+        ::glDrawArrays(GL_TRIANGLES, 0, pLightPassQuad->GetVertexData()->GetTriangleNum());
 
 #pragma endregion
 
-        ::glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
+        ::glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.GetFrameBufferHandle());
 
         ::glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
         ::glBlitFramebuffer(0, 0, WIDTH, HEIGHT, 0, 0, WIDTH, HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
@@ -223,29 +194,29 @@ int main()
 
 #pragma region [Draw Light]
 
-        // 1. Bind vertex attribute
-        ::glBindVertexArray(cubeVertexArray);
-
-        // 2. Bind vertex array
-        ::glBindBuffer(GL_ARRAY_BUFFER, cubeVertexBuffer);
-
-        // 3. Bind shader program
-        lightShader.Bind();
-
-        // 4. Upload shader parameters
-        lightShader.SetUniformMat4("view", view);
-        lightShader.SetUniformMat4("projection", projection);
-
-        for (unsigned int i = 0; i < gMultiLightPosition.size(); i++)
+        for (auto& pRenderObject : pointLightObjects)
         {
-            model = glm::translate(glm::mat4(1.0f), gMultiLightPosition[i]);
-            model = glm::scale(model, glm::vec3(0.2f));
-            lightShader.SetUniformMat4("model", model);
-            lightShader.SetUniformVec3("lightColor", gMultiLightColor[i]);
+            // 1. Bind vertex attribute
+            ::glBindVertexArray(pRenderObject->GetVertexData()->GetVertexArrayHandle());
+
+            // 2. Bind vertex array
+            ::glBindBuffer(GL_ARRAY_BUFFER, pRenderObject->GetVertexData()->GetVertexBufferHandle());
+
+            // 3. Bind shader program
+            ::glUseProgram(pRenderObject->GetShader()->GetHandle());
+
+            // 4. Upload uniforms
+            pRenderObject->GetShader()->SetUniformMat4("model", pRenderObject->GetModelMatrix());
+            pRenderObject->GetShader()->SetUniformMat4("view", view);
+            pRenderObject->GetShader()->SetUniformMat4("projection", projection);
+
+            PointLightObject* pPointLight = dynamic_cast<PointLightObject*>(pRenderObject.get());
+            pRenderObject->GetShader()->SetUniformVec3("lightColor", pPointLight->GetColor());
 
             // 5. Draw call
-            ::glDrawArrays(GL_TRIANGLES, 0, 36);
+            ::glDrawArrays(GL_TRIANGLES, 0, pRenderObject->GetVertexData()->GetTriangleNum());
         }
+
 
 #pragma endregion 
 
