@@ -4,10 +4,33 @@
     <Filter Include="src">
       <UniqueIdentifier>{52c37191-1def-40b8-990e-b0d964085b4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="glsl">
+      <UniqueIdentifier>{e73b76eb-8437-4382-8f56-096d61e015c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="glsl\deferredPass.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\deferredPass.vert">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\geometryPass.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\geometryPass.vert">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\light.frag">
+      <Filter>glsl</Filter>
+    </None>
+    <None Include="glsl\light.vert">
+      <Filter>glsl</Filter>
+    </None>
   </ItemGroup>
 </Project>

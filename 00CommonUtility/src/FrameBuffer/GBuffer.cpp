@@ -62,6 +62,7 @@ GBuffer::~GBuffer()
     ::glDeleteTextures(1, &_normalTexHandle);
     ::glDeleteTextures(1, &_albedoTexHandle);
     ::glDeleteFramebuffers(1, &_frameBufferHandle);
+    FrameBuffer::~FrameBuffer();
 }
 
 auto GBuffer::GetPositionTextureSlot() const -> int

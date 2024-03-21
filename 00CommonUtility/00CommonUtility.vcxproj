@@ -14,6 +14,7 @@
     <ClCompile Include="src\Camera\Camera.cpp" />
     <ClCompile Include="src\FrameBuffer\FrameBuffer.cpp" />
     <ClCompile Include="src\FrameBuffer\GBuffer.cpp" />
+    <ClCompile Include="src\FrameBuffer\ShadowMap.cpp" />
     <ClCompile Include="src\Glad\Glad.cpp" />
     <ClCompile Include="src\Object\Object.cpp" />
     <ClCompile Include="src\Shader\Shader.cpp" />
@@ -23,6 +24,7 @@
     <ClInclude Include="src\Camera\Camera.h" />
     <ClInclude Include="src\FrameBuffer\FrameBuffer.h" />
     <ClInclude Include="src\FrameBuffer\GBuffer.h" />
+    <ClInclude Include="src\FrameBuffer\ShadowMap.h" />
     <ClInclude Include="src\Glad\Glad.h" />
     <ClInclude Include="src\Glad\Khrplatform.h" />
     <ClInclude Include="src\GlobalData\Cube.h" />

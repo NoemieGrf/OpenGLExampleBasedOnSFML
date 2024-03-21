@@ -54,6 +54,9 @@
     <ClCompile Include="src\FrameBuffer\GBuffer.cpp">
       <Filter>src\FrameBuffer</Filter>
     </ClCompile>
+    <ClCompile Include="src\FrameBuffer\ShadowMap.cpp">
+      <Filter>src\FrameBuffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera\Camera.h">
@@ -99,6 +102,9 @@
       <Filter>src\FrameBuffer</Filter>
     </ClInclude>
     <ClInclude Include="src\FrameBuffer\GBuffer.h">
+      <Filter>src\FrameBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameBuffer\ShadowMap.h">
       <Filter>src\FrameBuffer</Filter>
     </ClInclude>
   </ItemGroup>
